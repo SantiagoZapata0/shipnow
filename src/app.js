@@ -1,11 +1,17 @@
+//! Imports
+
 import express from "express";
-import usersRouter from "./routes/users.routes.js";
-import MocksRoutes from "./mocks/routes/mock.routes.js";
 import { env } from "./config/env.js"
 
-const app = express();
+// ! Route imports
+
+import UsersRoutes from "./routes/users.routes.js";
+import ProductsRoutes from "./routes/products.routes.js";
+import MocksRoutes from "./mocks/routes/mock.routes.js";
 
 // ! Middlewares
+
+const app = express();
 
 app.use(express.json());
 
@@ -21,7 +27,8 @@ app.get("/api/health", (req, res) => {
 
 // ! Routes
 
-app.use("/api/users", usersRouter);
+app.use("/api/users", UsersRoutes);
+app.use("/api/products", ProductsRoutes);
 
 if(env.NODE_ENV !== "production"){
     app.use("/api/mocks", MocksRoutes);

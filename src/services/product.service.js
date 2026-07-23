@@ -3,27 +3,51 @@ import { PRODUCT_STATUS } from "../constants/constants.js";
 
 class ProductService{
     static async getAllProducts(){
-        return await ProductRepository.findProducts({});
-    }
-    static async getAvailableProducts(){
-        return await ProductRepository.findProducts({status: PRODUCT_STATUS.AVAILABLE, stock: {$gt: 0}});
+        const allProducts = await ProductRepository.findProducts({});
+
+        return allProducts.map((prod) => ({
+            title: prod.title,
+            description: prod.description,
+            code: prod.code,
+            price: prod.price,
+            stock: prod.stock,
+            category: prod.category,
+            status: prod.status,
+            thumbnails: prod.thumbnails
+        }))
     }
 
-    static async getProductById(prodId){
+    static async getAvailableProds(){
+
+        const availableProducts = await ProductRepository.findProducts({status: PRODUCT_STATUS.AVAILABLE, stock: {$gt: 0}});
+
+        return availableProducts.map((prod) => ({
+            title: prod.title,
+            description: prod.description,
+            code: prod.code,
+            price: prod.price,
+            stock: prod.stock,
+            category: prod.category,
+            status: prod.status,
+            thumbnails: prod.thumbnails
+        }))
+    }
+
+    static async getProdById(prodId){
         return await ProductRepository.findProductById(prodId);
     }
 
-    static async createOneProduct({name, description, price, status, stock}){
+    static async createOneProduct({title, description, code, price, stock, category, status, thumbnails}){
         
-        const existingProduct = await ProductRepository.findProducts({name})
+        const existingProducts = await ProductRepository.findProducts({code})
         
-        if(!name || !description || !price){
+        if(!title || !description || !code || !price || !category){
             const error = new Error("Todos los campos son obligatorios");
             error.status = 400;
             throw error;
         }
 
-        if(existingProduct.length > 0){
+        if(existingProducts.length > 0){
             const error = new Error("Nombre de producto duplicado");
             error.status = 400;
             throw error;
@@ -35,7 +59,18 @@ class ProductService{
             throw error;
         }
 
-        return await ProductRepository.createProduct({name, description, price, status, stock})
+        const createdProduct = await ProductRepository.createProduct({title, description, code, price, stock, category, status, thumbnails})
+        
+        return {
+            title: createdProduct.title,
+            description: createdProduct.description,
+            code: createdProduct.code,
+            price: createdProduct.price,
+            stock: createdProduct.stock,
+            category: createdProduct.category,
+            status: createdProduct.status,
+            thumbnails: createdProduct.thumbnails
+        }
     }
 
     static async updateOneProduct(prodId, data){
@@ -50,23 +85,26 @@ class ProductService{
 
         return {
             id: updatedProduct._id,
-            name: updatedProduct.name,
+            title: updatedProduct.title,
             description: updatedProduct.description,
+            code: updatedProduct.code,
             price: updatedProduct.price,
+            stock: updatedProduct.stock,
+            category: updatedProduct.category,
             status: updatedProduct.status,
-            stock: updatedProduct.stock
+            thumbnails: updatedProduct.thumbnails
         }
     }
 
     static async deleteOneProduct(prodId){
 
-        if(!prodId){
+        const deletedProduct = await ProductRepository.deleteProduct(prodId);
+
+        if(!deletedProduct){
             const error = new Error("Producto no encontrado");
             error.status = 404;
             throw error
         }
-        
-        return await ProductRepository.deleteProduct(prodId);
     }
 }
 

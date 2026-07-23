@@ -25,6 +25,9 @@ const userSchema = new Schema({
         default: USER_ROLES.USER,
         enum: Object.values(USER_ROLES)
     },
+},
+{
+    timestamps: true
 });
 
 const UserModel = model("User", userSchema);
