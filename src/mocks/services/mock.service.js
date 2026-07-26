@@ -1,6 +1,5 @@
 import { faker } from "@faker-js/faker";
 import { USER_ROLES } from "../../constants/constants.js";
-import ProductModel from "../../models/product.model.js";
 import UserModel from "../../models/user.model.js";
 
 class MockService{
@@ -19,8 +18,8 @@ class MockService{
         return users;
     }
 
-    static saveMockProducts = async (products) => {
-        await UserModel.insertMany(products);
+    static saveMockUsers = async (users) => {
+        await UserModel.insertMany(users);
     }
 }
 

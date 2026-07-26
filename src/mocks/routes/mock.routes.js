@@ -5,7 +5,7 @@ const router = Router();
 
 router.get("/mocking-users", MockController.mockingUsers);
 
-router.post("/generate-products", MockController.generateProducts);
+router.post("/generate-users", MockController.generateUsers);
 
 // Mocking products
 

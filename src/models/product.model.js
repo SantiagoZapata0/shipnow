@@ -35,7 +35,7 @@ const ProductSchema = new Schema({
     status: {
       type: String,
       required: true,
-      default: PRODUCT_STATUS.AVAILABLE,
+      default: PRODUCT_STATUS.DRAFT,
       enum: prod_status
     },
     thumbnails: {

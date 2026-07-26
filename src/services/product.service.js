@@ -34,27 +34,44 @@ class ProductService{
     }
 
     static async getProdById(prodId){
-        return await ProductRepository.findProductById(prodId);
+        const product = await ProductRepository.findProductById(prodId);
+
+        if(!product){
+            const error = new Error("No se encontro un producto con ese ID.");
+            error.status = 400;
+            throw error;
+        }
+
+        return {
+            title: product.title,
+            description: product.description,
+            code: product.code,
+            price: product.price,
+            stock: product.stock,
+            category: product.category,
+            status: product.status,
+            thumbnails: product.thumbnails
+        }
     }
 
     static async createOneProduct({title, description, code, price, stock, category, status, thumbnails}){
         
         const existingProducts = await ProductRepository.findProducts({code})
         
-        if(!title || !description || !code || !price || !category){
-            const error = new Error("Todos los campos son obligatorios");
+        if(!title || !description || !code || !category){
+            const error = new Error("Todos los campos son obligatorios.");
             error.status = 400;
             throw error;
         }
 
         if(existingProducts.length > 0){
-            const error = new Error("Nombre de producto duplicado");
+            const error = new Error("Codigo de producto duplicado.");
             error.status = 400;
             throw error;
         }
 
         if(price < 0){
-            const error = new Error("Precio invalido");
+            const error = new Error("Precio invalido.");
             error.status = 400;
             throw error;
         }
@@ -104,6 +121,17 @@ class ProductService{
             const error = new Error("Producto no encontrado");
             error.status = 404;
             throw error
+        }
+
+        return {
+            title: deletedProduct.title,
+            description: deletedProduct.description,
+            code: deletedProduct.code,
+            price: deletedProduct.price,
+            stock: deletedProduct.stock,
+            category: deletedProduct.category,
+            status: deletedProduct.status,
+            thumbnails: deletedProduct.thumbnails
         }
     }
 }

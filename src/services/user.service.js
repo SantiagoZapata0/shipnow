@@ -16,9 +16,15 @@ class UserService{
 
         const usersByRole = await UserRepository.getFor({role});
 
+        if(role === undefined){
+            const error = new Error("Rol requerido.");
+            error.status = 400;
+            throw error;
+        }
+
         if(usersByRole.length === 0){
-            const error = new Error(`No existen usuarios con rol: ${role}`);
-            error.status = 404;
+            const error = new Error(`No existen usuarios con rol: ${role.toUpperCase()}.`);
+            error.status = 400;
             throw error;
         }
 
@@ -108,9 +114,9 @@ class UserService{
             throw error
         }
 
-        if(data == null){
+        if(data === {}){
             const error = new Error("Introducir el contenido que desee actualizar.");
-            error.status = 404;
+            error.status = 400;
             throw error
         }
 
@@ -131,6 +137,13 @@ class UserService{
             const error = new Error("El usuario no existe.")
             error.status = 404;
             throw error;
+        }
+
+        return {
+            first_name: deletedUser.first_name,
+            last_name: deletedUser.last_name,
+            email: deletedUser.email,
+            role: deletedUser.role
         }
     }
 }

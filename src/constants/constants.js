@@ -5,6 +5,7 @@ export const USER_ROLES = Object.freeze({
 })
 
 export const PRODUCT_STATUS = Object.freeze({
+    DRAFT: "draft",
     AVAILABLE: "available",
     OUT_OF_STOCK: "out_of_stock",
     DISCONTINUED: "discontinued",

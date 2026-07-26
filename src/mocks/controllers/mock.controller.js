@@ -16,13 +16,13 @@ class MockController{
         }
     }
 
-    static async generateProducts(req, res){
+    static async generateUsers(req, res){
         try{
             const { count, saveToDatabase } = req.body;
-            const products = await MockService.generateMockUsers(count);
+            const users = await MockService.generateMockUsers(count);
 
             if(saveToDatabase){
-                await MockService.saveMockProducts(products)
+                await MockService.saveMockUsers(users)
                 return res.status(201).json({statusCode: 201, message: "Productos generados y guardados en base de datos"})
             }
 
