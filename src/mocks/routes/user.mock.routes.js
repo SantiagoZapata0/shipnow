@@ -1,14 +1,10 @@
 import Router from "express";
-import MockController from "../controllers/mock.controller.js";
+import UserMockController from "../controllers/user.mock.controller.js";
 
 const router = Router();
 
-router.get("/mocking-users", MockController.mockingUsers);
+router.get("/users", UserMockController.mockingUsers);
 
-router.post("/generate-users", MockController.generateUsers);
-
-// Mocking products
-
-// Generate data
+router.post("/users", UserMockController.generateUsers);
 
 export default router;

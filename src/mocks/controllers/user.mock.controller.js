@@ -1,16 +1,13 @@
-import { parse } from "dotenv";
-import MockService from "../services/user.mock.service.js";
+import UserMockService from "../services/user.mocks.service.js";
 
-class MockController{
+class UserMockController{
     static async mockingUsers(req, res){
         try{
             const rawCount = req.query.count || 100
-
             const count = parseInt(rawCount);
+            const users = await UserMockService.generateMockUsers(count);
 
-            const users = await MockService.generateMockUsers(count);
-
-            return res.status(200).json({statusCode: 200, payload: users})
+            return res.status(200).json({statusCode: 200, message: "Usuarios mock generados.", payload: users})
 
         } catch(err){
             return res.status(500).json({statusCode: 500, message: err.message})
@@ -20,18 +17,18 @@ class MockController{
     static async generateUsers(req, res){
         try{
             const { count, saveToDatabase } = req.body;
-            const users = await MockService.generateMockUsers(count);
+            const users = await UserMockService.generateMockUsers(count);
 
             if(saveToDatabase){
-                await MockService.saveMockUsers(users)
-                return res.status(201).json({statusCode: 201, message: "Usuarios generados y guardados en base de datos"})
+                await UserMockService.saveMockUsers(users)
+                return res.status(201).json({statusCode: 201, message: "Usuarios generados y guardados en base de datos.", payload: users})
             }
 
-            return res.status(200).json({statusCode: 200, message: "Usuarios mock generados"})
+            return res.status(200).json({statusCode: 200, message: "Usuarios mock generados.", payload: users})
         } catch(err){
             return res.status(500).json({statusCode: 500, message: err.message})
         }
     }
 }
 
-export default MockController;
+export default UserMockController;

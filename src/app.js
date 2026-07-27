@@ -3,11 +3,16 @@
 import express from "express";
 import { env } from "./config/env.js"
 
-// ! Route imports
+// ! Routes
 
 import UsersRoutes from "./routes/users.routes.js";
 import ProductsRoutes from "./routes/products.routes.js";
-import MocksRoutes from "./mocks/routes/mock.routes.js";
+
+// ! Mock routes
+
+import UserMockRoutes from "./mocks/routes/user.mock.routes.js";
+import OrderMockRoutes from "./mocks/routes/order.mocks.routes.js";
+import DeliveryRoutes from "./mocks/routes/delivery.mocks.routes.js";
 
 // ! Middlewares
 
@@ -31,7 +36,9 @@ app.use("/api/users", UsersRoutes);
 app.use("/api/products", ProductsRoutes);
 
 if(env.NODE_ENV !== "production"){
-    app.use("/api/mocks", MocksRoutes);
+    app.use("/api/mocks", UserMockRoutes);
+    app.use("/api/mocks", OrderMockRoutes);
+    app.use("/api/mocks", DeliveryRoutes);
 }
 
 export default app;
