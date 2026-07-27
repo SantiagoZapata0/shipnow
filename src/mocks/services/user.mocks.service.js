@@ -1,8 +1,8 @@
 import { faker } from "@faker-js/faker";
 import { USER_ROLES } from "../../constants/constants.js";
-import UserModel from "../../models/user.model.js";
+import UserMockRepository from "../repositories/user.mocks.repository.js";
 
-class MockService{
+class UserMockService{
     static generateMockUsers = async (count) => {
         const roles = Object.values(USER_ROLES);
 
@@ -19,8 +19,8 @@ class MockService{
     }
 
     static saveMockUsers = async (users) => {
-        await UserModel.insertMany(users);
+        await UserMockRepository.saveMany(users)
     }
 }
 
-export default MockService;
+export default UserMockService;
