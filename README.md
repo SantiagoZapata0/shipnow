@@ -186,3 +186,70 @@ Como Pedidos y Entregas referencian datos reales, conviene generarlos en este or
 2. Cargar **productos** reales manualmente (`POST /api/products`), ya que no forman parte del módulo de mocking.
 3. Generar **pedidos** (`POST /api/mocks/orders` con `saveToDatabase: true`), que van a referenciar los usuarios y productos ya existentes.
 4. Generar **entregas** (`POST /api/mocks/deliveries` con `saveToDatabase: true`), que van a referenciar los pedidos ya existentes y, si hay, a los usuarios con rol `COURIER`.
+
+## Manejo profesional de errores
+
+Todos los errores del proyecto se resuelven en una **capa centralizada**, en vez de responderse de forma aislada en cada ruta o Controller.
+
+### Cómo funciona
+
+- **`CustomError`** (`src/errors/custom-error.js`): clase que extiende `Error`. Se instancia con un código de error (key del diccionario) y, opcionalmente, un mensaje específico:
+  ```js
+  throw new CustomError("NOT_FOUND", "Producto no encontrado.");
+  throw new CustomError("BAD_REQUEST"); // usa el mensaje default del diccionario
+  ```
+- **Diccionario de errores** (`ERROR_CODES`): objeto centralizado (`Object.freeze`) que mapea cada código a un `statusCode` HTTP y un mensaje por defecto. Evita status codes y mensajes repetidos o inconsistentes en distintos archivos.
+- **Middleware global de errores** (`src/middlewares/handle-error.middleware.js`): último `app.use(...)` de `app.js`. Es el único lugar del proyecto que arma la respuesta HTTP de error:
+  - Si el error es una instancia de `CustomError`, responde con su `statusCode` y `message` tal cual.
+  - Si es un error externo no controlado (por ejemplo, un `CastError` o `ValidationError` de Mongoose, un `code: 11000` de duplicado de MongoDB, o un error de conexión a la base), un mapper interno lo traduce primero a un `CustomError` equivalente antes de responder.
+  - Cualquier otro error no reconocido cae en `INTERNAL_SERVER_ERROR` (`500`), sin exponer detalles internos al cliente.
+- **`notFoundHandler`**: middleware montado justo antes del error handler, que captura cualquier petición a una ruta inexistente y la convierte en un `CustomError` de tipo `NOT_FOUND` (`404`).
+
+Los Services y Controllers **nunca** arman una respuesta de error directamente: los Services lanzan (`throw`) el error correspondiente apenas detectan un problema, y los Controllers solo hacen `next(err)` en su `catch`, delegando toda la respuesta al middleware centralizado.
+
+### Estructura de la respuesta de error
+
+Todas las respuestas de error siguen el mismo formato, sin importar su origen:
+
+```json
+{
+  "status": "Error",
+  "error": "NOT_FOUND",
+  "message": "Producto no encontrado."
+}
+```
+
+| Campo     | Descripción                                                        |
+|-----------|------------------------------------------------------------------------|
+| `status`  | Siempre `"Error"`, para distinguir a simple vista una respuesta fallida |
+| `error`   | Código del error (key del diccionario `ERROR_CODES`)                    |
+| `message` | Mensaje descriptivo del problema                                        |
+
+El `statusCode` HTTP de la respuesta corresponde al definido en `ERROR_CODES` para ese código de error.
+
+### Cómo probar el comportamiento ante casos inválidos
+
+| Caso a probar                          | Cómo probarlo                                              | Resultado esperado                          |
+|-----------------------------------------|--------------------------------------------------------------|------------------------------------------------|
+| ID con formato inválido                 | `GET /api/products/abc123`                                    | `400 INVALID_ID`                                |
+| Recurso inexistente (ID válido)         | `GET /api/products/000000000000000000000000`                  | `404 NOT_FOUND`                                 |
+| Campos obligatorios faltantes           | `POST /api/products` sin `title`/`code`/etc.                  | `400 BAD_REQUEST`                               |
+| Precio inválido                         | `POST /api/products` con `price: -10` o `price: 0`             | `400 BAD_REQUEST`                               |
+| Estado de producto inválido             | `POST /api/products` con `status: "banana"`                    | `400 VALIDATION_ERROR`                          |
+| Rol de usuario inválido                 | `GET /api/users/role?role=banana`                              | `400 VALIDATION_ERROR`                          |
+| Clave duplicada (`code`/`email`)        | Crear dos veces el mismo `code` de producto o `email` de usuario | `409 DUPLICATE_KEY`                             |
+| Ruta inexistente                        | `GET /api/no-existe`                                            | `404 NOT_FOUND` (vía `notFoundHandler`)         |
+| Cantidad de mocks inválida              | `GET /api/mocks/orders?count=-5` o `?count=200`                 | `400 INVALID_MOCK_COUNT`                        |
+| Sin datos base para generar mocks       | `GET /api/mocks/orders?count=5` sin usuarios/productos cargados | `404 MOCK_DATA_NOT_FOUND`                       |
+
+### Validaciones específicas del módulo de mocks
+
+- **Cantidad inválida**: `count` debe ser un número entero entre 1 y 100. Valores negativos, cero, no numéricos o fuera de rango se rechazan con `INVALID_MOCK_COUNT`. Los decimales se truncan al entero (`2.5` → `2`) antes de validar.
+- **Datos base insuficientes**: generar pedidos requiere usuarios y productos ya existentes en la base; generar entregas requiere pedidos ya existentes (el repartidor es opcional). Si falta lo obligatorio, se responde `MOCK_DATA_NOT_FOUND`.
+- **Fallas durante la carga en MongoDB**: cualquier error al insertar los mocks generados (`insertMany`) se propaga desde el Repository hacia el Controller sin necesidad de `try/catch` adicionales en el Service, y termina siendo traducido por el middleware global (por ejemplo, a `VALIDATION_ERROR` o `DATABASE_CONNECTION_ERROR` según el caso).
+
+## Pendientes conocidos
+
+- Autenticación con JWT y middleware de autorización por rol (por ejemplo, para restringir el acceso a datos sensibles como `GET /api/users/email`).
+- Hasheo de contraseñas con `bcrypt` antes de guardar usuarios.
+- Logging estructurado (previsto para el próximo módulo; el catálogo de errores ya incluye códigos `UNAUTHORIZED`/`FORBIDDEN` preparados para cuando se implemente autenticación).
