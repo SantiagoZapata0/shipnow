@@ -1,4 +1,4 @@
-import CustomError from "../errors/app.error.js";
+import CustomError from "../errors/custom-error.js";
 
 export function errorHandler(err, req, res, next){
     const isCustomError = err instanceof CustomError;
@@ -13,6 +13,10 @@ export function errorHandler(err, req, res, next){
     }
 
     res.status(statusCode).json({status: "Error", error: code, message: message})
+}
+
+export function notFoundHandler(req, res, next){
+    next(new CustomError("ROUTE_NOT_FOUND"));
 }
 
 function mapToCustomError(err){

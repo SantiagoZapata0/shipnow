@@ -2,7 +2,7 @@
 
 import express from "express";
 import { env } from "./config/env.js"
-import { errorHandler } from "./middlewares/handle-error.middleware.js";
+import { errorHandler, notFoundHandler } from "./middlewares/handle-error.middleware.js";
 
 // ! Routes
 
@@ -43,6 +43,7 @@ if(env.NODE_ENV !== "production"){
     app.use("/api/mocks", DeliveryRoutes);
 }
 
+app.use(notFoundHandler);
 app.use(errorHandler); 
 
 export default app;

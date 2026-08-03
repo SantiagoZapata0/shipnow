@@ -1,4 +1,4 @@
-import CustomError from "../errors/app.error.js";
+import CustomError from "../errors/custom-error.js";
 import UserRepository from "../repositories/user.repository.js";
 
 class UserService{
@@ -76,7 +76,7 @@ class UserService{
     static async createOneUser({first_name, last_name, email, password, role}){
         
         if(!first_name || !last_name || !email || !password){
-            throw new CustomError(400, "Todos los campos son obligatorios.")
+            throw new CustomError("BAD_REQUEST")
         }
 
         if(password.length < 6){
@@ -88,9 +88,7 @@ class UserService{
         const existingUser = await UserRepository.getByEmail(email);
 
         if(existingUser){
-            const error = new Error("El usuario ya existe.");
-            error.status = 409;
-            throw error;
+            throw new CustomError("DUPLICATE_KEY")
         }
 
         const userCreated = await UserRepository.createOne({first_name, last_name, email, password, role})
