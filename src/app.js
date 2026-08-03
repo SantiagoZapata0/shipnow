@@ -2,6 +2,7 @@
 
 import express from "express";
 import { env } from "./config/env.js"
+import { errorHandler } from "./middlewares/handle-error.middleware.js";
 
 // ! Routes
 
@@ -13,6 +14,7 @@ import ProductsRoutes from "./routes/products.routes.js";
 import UserMockRoutes from "./mocks/routes/user.mock.routes.js";
 import OrderMockRoutes from "./mocks/routes/order.mocks.routes.js";
 import DeliveryRoutes from "./mocks/routes/delivery.mocks.routes.js";
+
 
 // ! Middlewares
 
@@ -40,5 +42,7 @@ if(env.NODE_ENV !== "production"){
     app.use("/api/mocks", OrderMockRoutes);
     app.use("/api/mocks", DeliveryRoutes);
 }
+
+app.use(errorHandler); 
 
 export default app;

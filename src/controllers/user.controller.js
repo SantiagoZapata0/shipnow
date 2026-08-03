@@ -41,12 +41,12 @@ class UserController {
         }
     }
 
-    static async createUser(req, res){
+    static async createUser(req, res, next){
         try{
             const user = await UserService.createOneUser(req.body);
             return res.status(201).json({statusCode: 201, message: "Usuario creado.", payload: user})
         } catch(err){
-            return res.status(err.status || 500).json({statusCode: err.status || 500, message: err.message})
+            next(err)
         }
     }
 
