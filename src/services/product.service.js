@@ -65,7 +65,11 @@ class ProductService{
             throw new CustomError("DUPLICATE_KEY", "Codigo de producto duplicado.");
         }
 
-        if(price < 0){
+        if(status && !Object.values(PRODUCT_STATUS).includes(status)){
+            throw new CustomError("VALIDATION_ERROR", "Estado de producto invalido.")
+        }
+
+        if(price <= 0){
             throw new CustomError("BAD_REQUEST", "Precio invalido.");
         }
 

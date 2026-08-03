@@ -1,5 +1,6 @@
 import CustomError from "../errors/custom-error.js";
 import UserRepository from "../repositories/user.repository.js";
+import { USER_ROLES } from "../constants/constants.js";
 
 class UserService{
     static async getAll(){
@@ -15,11 +16,15 @@ class UserService{
 
     static async getByRole({role}){
 
-        const usersByRole = await UserRepository.getFor({role});
-
         if(role === undefined){
             throw new CustomError("BAD_REQUEST", "Debe especificar un rol para filtrar los usuarios.");
         }
+
+        if(!Object.values(USER_ROLES).includes(role)){
+            throw new CustomError("VALIDATION_ERROR", "Rol invalido.")
+        }
+
+        const usersByRole = await UserRepository.getFor({role});
 
         if(usersByRole.length === 0){
             throw new CustomError("NOT_FOUND", `No existen usuarios con rol: ${role.toUpperCase()}.`);

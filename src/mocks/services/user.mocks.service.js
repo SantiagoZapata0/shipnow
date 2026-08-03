@@ -5,15 +5,11 @@ import CustomError from "../../errors/custom-error.js";
 
 class UserMockService{
     static generateMockUsers = async (count) => {
-        const roles = Object.values(USER_ROLES);
-
         if(!Number.isInteger(count) || count < 1 || count > 100){
-            throw new CustomError("INVALID_MOCK_COUNT", "El número de usuarios a generar debe ser un número.");
+            throw new CustomError("INVALID_MOCK_COUNT", "El número de usuarios a generar debe ser un número entre 1 y 100.");
         }
 
-        if(roles.length < 1){
-            throw new CustomError("MOCK_DATA_NOT_FOUND", "No existen roles disponibles.");
-        }
+        const roles = Object.values(USER_ROLES);
 
         const users = Array.from({length: count}, () => {
             return {

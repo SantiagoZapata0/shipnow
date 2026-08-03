@@ -15,7 +15,8 @@ class DeliveryMockController{
     static async generateDeliveries(req, res, next){
         try{
             const { count, saveToDatabase } = req.body;
-            const deliveries = await DeliveryMockService.generateMockDeliveries(count);
+            const countInt = parseInt(count);
+            const deliveries = await DeliveryMockService.generateMockDeliveries(countInt);
 
             if(saveToDatabase){
                 await DeliveryMockService.saveMockDeliveries(deliveries);

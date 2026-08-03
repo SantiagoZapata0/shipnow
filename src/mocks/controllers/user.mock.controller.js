@@ -17,7 +17,8 @@ class UserMockController{
     static async generateUsers(req, res, next){
         try{
             const { count, saveToDatabase } = req.body;
-            const users = await UserMockService.generateMockUsers(count);
+            const countInt = parseInt(count);
+            const users = await UserMockService.generateMockUsers(countInt);
 
             if(saveToDatabase){
                 await UserMockService.saveMockUsers(users)

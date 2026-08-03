@@ -26,7 +26,8 @@ class UserController {
         //TODO: Este endpoint expone el password sin protección.
         //! Restringir con middleware de autorización (solo ADMIN) cuando se implemente JWT/auth.
         try{
-            const user = await UserService.getByEmail(req.body);
+            const { email } = req.query;
+            const user = await UserService.getByEmail(email);
             return res.status(200).json({statusCode: 200, message: "Usuario encontrado.", payload: user})
         } catch(err){
             next(err)

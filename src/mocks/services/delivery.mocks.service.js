@@ -7,25 +7,21 @@ import CustomError from "../../errors/custom-error.js";
 
 class DeliveryMockService{
     static async generateMockDeliveries(count){
+        if(!Number.isInteger(count) || count > 100 || count <= 0){
+            throw new CustomError("INVALID_MOCK_COUNT", "El número de entregas a generar debe ser un número entre 1 y 100.");
+        }
+
         const couriers = await UserRepository.getFor({role: USER_ROLES.COURIER});
         const orders = await OrderRepository.getOrders();
         const statusAvailables = Object.values(DELIVERY_STATUS);
 
-        if(!Number.isInteger(count) || count > 100 || count <= 0){
-            throw new CustomError("INVALID_MOCK_COUNT", "El número de entregas a generar debe ser un número.");
-        }
-
-        if(couriers.length < 1 || orders.length < 1){
-            throw new CustomError("MOCK_DATA_NOT_FOUND", "No existen usuarios o ordenes en la base de datos.");
-        }
-
-        if(statusAvailables.length < 1){
-            throw new CustomError("MOCK_DATA_NOT_FOUND", "No existen entregas en la base de datos.");
+        if(orders.length < 1){
+            throw new CustomError("MOCK_DATA_NOT_FOUND", "No existen pedidos en la base de datos.");
         }
 
         const delivery = Array.from({length: count}, () => {
             const hasCourier = faker.datatype.boolean();
-            const courier = hasCourier ? faker.helpers.arrayElement(couriers) : undefined
+            const courier = hasCourier && couriers.length > 0 ? faker.helpers.arrayElement(couriers) : undefined
             const courierId = courier ? courier._id : undefined
 
             const order = faker.helpers.arrayElement(orders)
@@ -45,7 +41,7 @@ class DeliveryMockService{
         })
         return delivery;
     }
-
+    
     static async saveMockDeliveries(deliveries){
         await DeliveryMocksRepository.saveManyDeliveries(deliveries);
     }

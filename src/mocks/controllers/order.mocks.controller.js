@@ -16,7 +16,8 @@ class OrderMockController{
     static async generateOrders(req, res, next){
         try{
             const { count, saveToDatabase } = req.body;
-            const orders = await OrderMockService.generateMockOrders(count)
+            const countInt = parseInt(count);
+            const orders = await OrderMockService.generateMockOrders(countInt);
 
             if(saveToDatabase){
                 await OrderMockService.saveMockOrders(orders);

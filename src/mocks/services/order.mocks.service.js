@@ -7,12 +7,14 @@ import CustomError from "../../errors/custom-error.js";
 
 class OrderMockService{
     static async generateMockOrders(count){
+        if(!Number.isInteger(count) || count > 100 || count <= 0){
+            throw new CustomError("INVALID_MOCK_COUNT", "El número de ordenes a generar debe ser un número entre 1 y 100.");
+        }
+
         const users = await UserRepository.getFor({})
         const products = await ProductRepository.findProducts({});
-        
-        if(!Number.isInteger(count) || count > 100 || count <= 0){
-            throw new CustomError("INVALID_MOCK_COUNT", "El número de ordenes a generar debe ser un número.");
-        }
+        const status = Object.values(ORDER_STATUS);
+        const priority = Object.values(ORDER_PRIORITY);
 
         if(users.length < 1 || products.length < 1){
             throw new CustomError("MOCK_DATA_NOT_FOUND", "No existen usuarios o productos en la base de datos.");
@@ -21,8 +23,7 @@ class OrderMockService{
         const result = Array.from({length: count}, () => {
             const randomUser = faker.helpers.arrayElement(users);
             const randomProduct = faker.helpers.arrayElements(products, {min: 1, max: 5});
-            const status = Object.values(ORDER_STATUS);
-            const priority = Object.values(ORDER_PRIORITY);
+            
 
             const rawItems = randomProduct.map((prod) => {
                 const quantity = faker.number.int({min: 1, max: 5})
