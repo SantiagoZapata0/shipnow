@@ -3,12 +3,25 @@ import UserRepository from "../../repositories/user.repository.js"
 import OrderRepository from "../../repositories/order.repository.js"
 import DeliveryMocksRepository from "../repositories/delivery.mocks.repository.js";
 import { USER_ROLES, DELIVERY_STATUS } from "../../constants/constants.js"
+import CustomError from "../../errors/custom-error.js";
 
 class DeliveryMockService{
     static async generateMockDeliveries(count){
         const couriers = await UserRepository.getFor({role: USER_ROLES.COURIER});
         const orders = await OrderRepository.getOrders();
         const statusAvailables = Object.values(DELIVERY_STATUS);
+
+        if(!Number.isInteger(count) || count > 100 || count <= 0){
+            throw new CustomError("INVALID_MOCK_COUNT", "El número de entregas a generar debe ser un número.");
+        }
+
+        if(couriers.length < 1 || orders.length < 1){
+            throw new CustomError("MOCK_DATA_NOT_FOUND", "No existen usuarios o ordenes en la base de datos.");
+        }
+
+        if(statusAvailables.length < 1){
+            throw new CustomError("MOCK_DATA_NOT_FOUND", "No existen entregas en la base de datos.");
+        }
 
         const delivery = Array.from({length: count}, () => {
             const hasCourier = faker.datatype.boolean();

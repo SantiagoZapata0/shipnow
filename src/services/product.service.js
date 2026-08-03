@@ -1,5 +1,6 @@
 import ProductRepository from "../repositories/products.repository.js";
 import { PRODUCT_STATUS } from "../constants/constants.js";
+import CustomError from "../errors/custom-error.js";
 
 class ProductService{
     static async getAllProducts(){
@@ -37,9 +38,7 @@ class ProductService{
         const product = await ProductRepository.findProductById(prodId);
 
         if(!product){
-            const error = new Error("No se encontro un producto con ese ID.");
-            error.status = 400;
-            throw error;
+            throw new CustomError("NOT_FOUND", "Producto no encontrado.");
         }
 
         return {
@@ -59,21 +58,15 @@ class ProductService{
         const existingProducts = await ProductRepository.findProducts({code})
         
         if(!title || !description || !code || !category){
-            const error = new Error("Todos los campos son obligatorios.");
-            error.status = 400;
-            throw error;
+            throw new CustomError("BAD_REQUEST", "Faltan campos obligatorios.");
         }
 
         if(existingProducts.length > 0){
-            const error = new Error("Codigo de producto duplicado.");
-            error.status = 400;
-            throw error;
+            throw new CustomError("DUPLICATE_KEY", "Codigo de producto duplicado.");
         }
 
         if(price < 0){
-            const error = new Error("Precio invalido.");
-            error.status = 400;
-            throw error;
+            throw new CustomError("BAD_REQUEST", "Precio invalido.");
         }
 
         const createdProduct = await ProductRepository.createProduct({title, description, code, price, stock, category, status, thumbnails})
@@ -95,9 +88,7 @@ class ProductService{
         const updatedProduct = await ProductRepository.updateProduct(prodId, data);
         
         if(!updatedProduct){
-            const error = new Error("Producto no encontrado");
-            error.status = 404;
-            throw error;
+            throw new CustomError("NOT_FOUND", "Producto no encontrado.");
         }
 
         return {
@@ -118,9 +109,7 @@ class ProductService{
         const deletedProduct = await ProductRepository.deleteProduct(prodId);
 
         if(!deletedProduct){
-            const error = new Error("Producto no encontrado");
-            error.status = 404;
-            throw error
+            throw new CustomError("NOT_FOUND", "Producto no encontrado.");
         }
 
         return {

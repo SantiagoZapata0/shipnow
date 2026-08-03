@@ -1,26 +1,27 @@
 import UserService from "../services/user.service.js"
 
 class UserController {
-    static async getUsers(req, res){
+    static async getUsers(req, res, next){
         try{
             const users = await UserService.getAll()
             return res.status(200).json({statusCode: 200, message: "Usuarios encontrados.", payload: users})
         } catch(err){
-            return res.status(err.status || 500).json({statusCode: err.status || 500, message: err.message})
+            next(err)
         }
     }
 
-    static async getUserByRole(req, res){
+    static async getUserByRole(req, res, next){
         try{
             const { role } = req.query;
             const users = await UserService.getByRole({role});
             return res.status(200).json({statusCode: 200, message: `Usuarios encontrados con rol: ${role}.`, payload: users})
         } catch(err){
-            return res.status(err.status || 500).json({statusCode: err.status || 500, message: err.message})
+            next(err)
+            
         }
     }
 
-    static async getUserByEmail(req, res){
+    static async getUserByEmail(req, res, next){
 
         //TODO: Este endpoint expone el password sin protección.
         //! Restringir con middleware de autorización (solo ADMIN) cuando se implemente JWT/auth.
@@ -28,16 +29,16 @@ class UserController {
             const user = await UserService.getByEmail(req.body);
             return res.status(200).json({statusCode: 200, message: "Usuario encontrado.", payload: user})
         } catch(err){
-            return res.status(err.status || 500).json({statusCode: err.status || 500, message: err.message})
+            next(err)
         }
     }
 
-    static async getUserById(req, res){
+    static async getUserById(req, res, next){
         try{
             const user = await UserService.getById(req.params.uid);
             return res.status(200).json({statusCode: 200, message: "Usuario encontrado.", payload: user})
         } catch(err){
-            return res.status(err.status || 500).json({statusCode: err.status || 500, message: err.message})
+            next(err)
         }
     }
 
@@ -50,21 +51,21 @@ class UserController {
         }
     }
 
-    static async updateUser(req, res){
+    static async updateUser(req, res, next){
         try{
             const user = await UserService.updateOneUser(req.params.uid, req.body);
             return res.status(200).json({statusCode: 200, message: "Usuario actualizado.", payload: user})
         } catch(err){
-            return res.status(err.status || 500).json({statusCode: err.status || 500, message: err.message})
+            next(err)
         }
     }
 
-    static async deleteUser(req, res){
+    static async deleteUser(req, res, next){
         try{
             const user = await UserService.deleteOneUser(req.params.uid);
             return res.status(200).json({statusCode: 200, message: "Usuario eliminado.", payload: user})
         } catch(err){
-            return res.status(err.status || 500).json({statusCode: err.status || 500, message: err.message})
+            next(err)
         }
     }
 }

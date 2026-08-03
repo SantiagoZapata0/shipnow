@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import customError from "../errors/custom-error.js";
 
 dotenv.config();
 
@@ -13,6 +14,6 @@ const env_vars = Object.keys(env)
 
 for (const env_var of env_vars) {
     if (!env[env_var]) {
-        throw new Error(`Missing required environment variable: ${env_var}`);
+        throw new customError("INTERNAL_SERVER_ERROR", `La variable de entorno ${env_var} no está definida.`);
     }
 }

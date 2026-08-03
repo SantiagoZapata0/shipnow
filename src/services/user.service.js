@@ -18,15 +18,11 @@ class UserService{
         const usersByRole = await UserRepository.getFor({role});
 
         if(role === undefined){
-            const error = new Error("Rol requerido.");
-            error.status = 400;
-            throw error;
+            throw new CustomError("BAD_REQUEST", "Debe especificar un rol para filtrar los usuarios.");
         }
 
         if(usersByRole.length === 0){
-            const error = new Error(`No existen usuarios con rol: ${role.toUpperCase()}.`);
-            error.status = 400;
-            throw error;
+            throw new CustomError("NOT_FOUND", `No existen usuarios con rol: ${role.toUpperCase()}.`);
         }
 
         return usersByRole.map((user) => ({
@@ -42,9 +38,7 @@ class UserService{
         const userByEmail = await UserRepository.getByEmail(email)
 
         if(!userByEmail){
-            const error = new Error("Usuario no encontrado.");
-            error.status = 404;
-            throw error;
+            throw new CustomError("NOT_FOUND", `No existe un usuario con el email: ${email}.`);
         }
 
         return {
@@ -60,9 +54,7 @@ class UserService{
         const userById = await UserRepository.getById(id)
 
         if(!userById){
-            const error = new Error("Usuario no encontrado.");
-            error.status = 404;
-            throw error;
+            throw new CustomError("NOT_FOUND", `No existe un usuario con el ID: ${id}.`);
         }
         
         return {
@@ -76,19 +68,17 @@ class UserService{
     static async createOneUser({first_name, last_name, email, password, role}){
         
         if(!first_name || !last_name || !email || !password){
-            throw new CustomError("BAD_REQUEST")
+            throw new CustomError("BAD_REQUEST", "Faltan campos obligatorios.");
         }
 
         if(password.length < 6){
-            const error = new Error("La contraseña debe contener al menos 6 caracteres.");
-            error.status = 400;
-            throw error;
+            throw new CustomError("BAD_REQUEST", "La contraseña debe contener al menos 6 caracteres.");
         }
 
         const existingUser = await UserRepository.getByEmail(email);
 
         if(existingUser){
-            throw new CustomError("DUPLICATE_KEY")
+            throw new CustomError("DUPLICATE_KEY", "El email ya está en uso.");
         }
 
         const userCreated = await UserRepository.createOne({first_name, last_name, email, password, role})
@@ -106,15 +96,11 @@ class UserService{
         const existingUser = await UserRepository.getById(id)
 
         if(!existingUser){
-            const error = new Error("El usuario no existe.");
-            error.status = 404;
-            throw error
+            throw new CustomError("NOT_FOUND", "El usuario no existe.");
         }
 
-        if(data === {}){
-            const error = new Error("Introducir el contenido que desee actualizar.");
-            error.status = 400;
-            throw error
+        if(!data || Object.keys(data).length === 0){
+            throw new CustomError("BAD_REQUEST", "Faltan campos obligatorios.");
         }
 
         const updatedUser = await UserRepository.updateOne(id, data)
@@ -131,9 +117,7 @@ class UserService{
         const deletedUser = await UserRepository.deleteOne(id)
 
         if(!deletedUser){
-            const error = new Error("El usuario no existe.")
-            error.status = 404;
-            throw error;
+            throw new CustomError("NOT_FOUND", "El usuario no existe.");
         }
 
         return {

@@ -1,7 +1,7 @@
 import UserMockService from "../services/user.mocks.service.js";
 
 class UserMockController{
-    static async mockingUsers(req, res){
+    static async mockingUsers(req, res, next){
         try{
             const rawCount = req.query.count || 100
             const count = parseInt(rawCount);
@@ -10,11 +10,11 @@ class UserMockController{
             return res.status(200).json({statusCode: 200, message: "Usuarios mock generados.", payload: users})
 
         } catch(err){
-            return res.status(500).json({statusCode: 500, message: err.message})
+            next(err)
         }
     }
 
-    static async generateUsers(req, res){
+    static async generateUsers(req, res, next){
         try{
             const { count, saveToDatabase } = req.body;
             const users = await UserMockService.generateMockUsers(count);
@@ -26,7 +26,7 @@ class UserMockController{
 
             return res.status(200).json({statusCode: 200, message: "Usuarios mock generados.", payload: users})
         } catch(err){
-            return res.status(500).json({statusCode: 500, message: err.message})
+            next(err)
         }
     }
 }

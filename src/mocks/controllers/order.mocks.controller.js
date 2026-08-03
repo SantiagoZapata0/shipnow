@@ -1,7 +1,7 @@
 import OrderMockService from "../services/order.mocks.service.js";
 
 class OrderMockController{
-    static async mockingOrders(req, res){
+    static async mockingOrders(req, res, next){
         try{
             const rawCount = req.query.count || 100;
             const count = parseInt(rawCount);
@@ -9,11 +9,11 @@ class OrderMockController{
 
             return res.status(200).json({statusCode: 200, payload: orders})
         } catch(err){
-            return res.status(500).json({statusCode: 500, message: err.message})
+            next(err)
         }
     }
 
-    static async generateOrders(req, res){
+    static async generateOrders(req, res, next){
         try{
             const { count, saveToDatabase } = req.body;
             const orders = await OrderMockService.generateMockOrders(count)
@@ -25,7 +25,7 @@ class OrderMockController{
 
             return res.status(200).json({statusCode: 200, message: "Ordenes mock generadas.", payload: orders})
         } catch(err){
-            return res.status(500).json({statusCode: 500, message: err.message})
+            next(err)
         }
         
     }

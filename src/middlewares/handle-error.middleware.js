@@ -2,7 +2,7 @@ import CustomError from "../errors/custom-error.js";
 
 export function errorHandler(err, req, res, next){
     const isCustomError = err instanceof CustomError;
-    const customError = isCustomError ? err : mapToCustomError(err)
+    const customError = isCustomError ? err : customErrorMapper(err)
 
     const { statusCode, code, message } = customError;
 
@@ -16,10 +16,13 @@ export function errorHandler(err, req, res, next){
 }
 
 export function notFoundHandler(req, res, next){
-    next(new CustomError("ROUTE_NOT_FOUND"));
+    next(new CustomError("NOT_FOUND", "Ruta no encontrada."));
 }
 
-function mapToCustomError(err){
+const connectionMongoDbErrors = ["MongooseServerSelectionError","MongoServerSelectionError","MongoNetworkError","MongoTimeoutError"];
+
+function customErrorMapper(err){
+
     if(err.name === "CastError"){
         return new CustomError("INVALID_ID");
     }
@@ -28,6 +31,10 @@ function mapToCustomError(err){
     }
     if(err.name === "ValidationError"){
         return new CustomError("VALIDATION_ERROR");
+    }
+
+    if (connectionMongoDbErrors.includes(err.name) || err.code === "ECONNREFUSED" || err.code === "ENOTFOUND" || err.code === "ETIMEDOUT"){
+        return new CustomError("DATABASE_CONNECTION_ERROR");
     }
 
     return new CustomError("INTERNAL_SERVER_ERROR");
