@@ -43,6 +43,8 @@ if(env.NODE_ENV !== "production"){
     app.use("/api/mocks", DeliveryRoutes);
 }
 
+app.get("/logger", )
+
 app.use(notFoundHandler);
 app.use(errorHandler); 
 
