@@ -10,6 +10,7 @@ ShipNow es una API REST para la gestión de una logística de distribución de p
 - **MongoDB** (Atlas) + **Mongoose** — base de datos y modelado
 - **dotenv** — manejo de variables de entorno
 - **@faker-js/faker** — generación de datos de prueba (mocking)
+- **Winston** + **winston-daily-rotate-file** — logging centralizado y rotación de archivos de errores
 - **ESM** (ECMAScript Modules) — sistema de importación
 
 ## Instalación y ejecución local
@@ -69,8 +70,10 @@ Router → Controller → Service → Repository → Model (Mongoose)
 
 ```
 src/
-├── config/            # Validación y exportación de variables de entorno
+├── config/            # Variables de entorno y configuración centralizada del logger
 ├── constants/         # Valores inmutables del dominio (roles, estados, prioridades)
+├── errors/            # Códigos de error y clase CustomError
+├── middlewares/       # Manejo centralizado de errores y rutas inexistentes
 ├── models/            # Definición de esquemas de Mongoose (Product, User, Order, Delivery)
 ├── repositories/      # Único punto de acceso a Mongoose/MongoDB (1 de las 3 capas)
 ├── services/          # Lógica de negocio (1 de las 3 capas)
@@ -189,7 +192,7 @@ Como Pedidos y Entregas referencian datos reales, conviene generarlos en este or
 
 ## Manejo profesional de errores
 
-Todos los errores del proyecto se resuelven en una **capa centralizada**, en vez de responderse de forma aislada en cada ruta o Controller.
+Todos los errores del proyecto se resuelven en una **capa centralizada** y quedan registrados mediante el logger, en vez de responderse o registrarse de forma aislada en cada ruta o Controller.
 
 ### Cómo funciona
 
@@ -200,9 +203,9 @@ Todos los errores del proyecto se resuelven en una **capa centralizada**, en vez
   ```
 - **Diccionario de errores** (`ERROR_CODES`): objeto centralizado (`Object.freeze`) que mapea cada código a un `statusCode` HTTP y un mensaje por defecto. Evita status codes y mensajes repetidos o inconsistentes en distintos archivos.
 - **Middleware global de errores** (`src/middlewares/handle-error.middleware.js`): último `app.use(...)` de `app.js`. Es el único lugar del proyecto que arma la respuesta HTTP de error:
-  - Si el error es una instancia de `CustomError`, responde con su `statusCode` y `message` tal cual.
+  - Si el error es una instancia de `CustomError`, lo registra con nivel `warn` y responde con su `statusCode`, código y mensaje.
   - Si es un error externo no controlado (por ejemplo, un `CastError` o `ValidationError` de Mongoose, un `code: 11000` de duplicado de MongoDB, o un error de conexión a la base), un mapper interno lo traduce primero a un `CustomError` equivalente antes de responder.
-  - Cualquier otro error no reconocido cae en `INTERNAL_SERVER_ERROR` (`500`), sin exponer detalles internos al cliente.
+  - Los errores inesperados se registran con nivel `error`. Cualquier error no reconocido cae en `INTERNAL_SERVER_ERROR` (`500`), sin exponer detalles internos al cliente.
 - **`notFoundHandler`**: middleware montado justo antes del error handler, que captura cualquier petición a una ruta inexistente y la convierte en un `CustomError` de tipo `NOT_FOUND` (`404`).
 
 Los Services y Controllers **nunca** arman una respuesta de error directamente: los Services lanzan (`throw`) el error correspondiente apenas detectan un problema, y los Controllers solo hacen `next(err)` en su `catch`, delegando toda la respuesta al middleware centralizado.
@@ -226,6 +229,45 @@ Todas las respuestas de error siguen el mismo formato, sin importar su origen:
 | `message` | Mensaje descriptivo del problema                                        |
 
 El `statusCode` HTTP de la respuesta corresponde al definido en `ERROR_CODES` para ese código de error.
+
+Así, la respuesta incluye información útil y segura para quien consume la API (`error` y `message`), mientras que el detalle técnico del incidente queda centralizado en los logs y no se expone al cliente.
+
+## Logging centralizado
+
+El logger se configura una sola vez en `src/config/logger.js` y se reutiliza en toda la aplicación. Esto unifica el formato, los niveles y el destino de los registros.
+
+### Niveles de log
+
+| Nivel | Uso en la aplicación |
+|-------|-----------------------|
+| `fatal` | Fallas críticas, como un error al conectar con MongoDB. |
+| `error` | Errores inesperados capturados por el middleware global. |
+| `warn` | Errores controlados (`CustomError`) y situaciones que requieren atención. |
+| `info` | Inicio del servidor, health check y operaciones exitosas de controllers y mocks. |
+| `http` | Método de cada solicitud HTTP entrante. |
+| `debug` | Información de diagnóstico disponible fuera de producción. |
+
+El nivel mínimo es `debug` en desarrollo y `info` en producción; por lo tanto, los mensajes `debug` no se muestran en producción.
+
+### Destinos y formato
+
+- **Consola:** muestra todos los niveles habilitados con fecha, hora y colores para facilitar el seguimiento durante el desarrollo.
+- **`logs/error.log`:** conserva los mensajes de nivel `error` o superior en formato JSON.
+- **`logs/error-YYYY-MM-DD.log`:** genera archivos diarios con los errores en formato JSON y conserva los últimos 14 días.
+
+La carpeta `logs/` se encuentra excluida del control de versiones para evitar versionar registros locales.
+
+Además de los eventos de inicio, base de datos y operaciones exitosas, `app.js` registra cada solicitud entrante y el middleware global registra todos los errores, tanto customizados como inesperados. Esto permite correlacionar la respuesta entregada al usuario con el evento operativo sin duplicar la lógica de logging en cada punto de la aplicación.
+
+### Endpoint de verificación del logger
+
+Para comprobar visualmente los niveles configurados durante el desarrollo, está disponible:
+
+| Método | Endpoint | Resultado |
+|--------|----------|-----------|
+| GET | `/logger-test` | Emite un registro de cada nivel (`debug`, `http`, `info`, `warn`, `error` y `fatal`) y responde `200 OK`. |
+
+Este endpoint es de diagnóstico; no modifica datos de la aplicación.
 
 ### Cómo probar el comportamiento ante casos inválidos
 
@@ -252,4 +294,4 @@ El `statusCode` HTTP de la respuesta corresponde al definido en `ERROR_CODES` pa
 
 - Autenticación con JWT y middleware de autorización por rol (por ejemplo, para restringir el acceso a datos sensibles como `GET /api/users/email`).
 - Hasheo de contraseñas con `bcrypt` antes de guardar usuarios.
-- Logging estructurado (previsto para el próximo módulo; el catálogo de errores ya incluye códigos `UNAUTHORIZED`/`FORBIDDEN` preparados para cuando se implemente autenticación).
+- El catálogo de errores ya incluye los códigos `UNAUTHORIZED`/`FORBIDDEN`, preparados para cuando se implemente autenticación.
