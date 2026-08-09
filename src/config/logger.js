@@ -1,53 +1,60 @@
 import winston from "winston";
+import DailyRotateFile from "winston-daily-rotate-file";
+import __dirname from "../utils/utils.js";
+import path from "node:path";
 import { env } from "./env.js"
 
 const customLevels = {
     levels: {
-        debug: 0,
-        info: 1,
-        warning: 2, 
-        error: 3,
-        fatal: 4
+        fatal: 0,
+        error: 1,
+        warn: 2, 
+        info: 3,
+        http: 4,
+        debug: 5
     },
     colors: {
-        debug: "blue",
-        info: "green",
-        warning: "yellow",
+        fatal: "red bold",
         error: "red",
-        fatal: "red bold"
+        warn: "yellow", 
+        info: "green",
+        http: "magenta",
+        debug: "blue"
     }
 }
 
-winston.addColors(customLevels.colors);
-winston.add(winston.transports.Console, customLevels.levels);
+winston.addColors(customLevels.colors)
+
+const logDir = path.join(__dirname, "../../logs");
+
+const consoleFormat = winston.format.combine(
+    winston.format.colorize({all: true}),
+    winston.format.timestamp({format: "YYYY-MM-DD HH-mm-ss:ms"}),
+    winston.format.printf(({timestamp, level, message, stack}) => {
+        return `${timestamp} [${level}]: ${stack || message}`
+    })
+)
+
+const fileFormat = winston.format.combine(
+    winston.format.timestamp({format: "YYYY-MM-DD HH-mm-ss:ms"}),
+    winston.format.json()
+)
 
 const logger = winston.createLogger({
     level: env.NODE_ENV === "production" ? "info" : "debug",
-    format: winston.format.combine(winston.format.timestamp(
-        winston.format.colorize({all: true}),
-        winston.format.timestamp(),
-        winston.format.json()
-    )),
+    levels: customLevels.levels,
     transports: [
-        new winston.transports.Console(), 
-        new winston.transports.File({filename: "logs/error.log", level: "error"})
+        new winston.transports.Console({format: consoleFormat}),
+        new DailyRotateFile({
+            dirname: logDir,
+            filename: "error-%DATE%.log",
+            datePattern: "YYYY-MM-DD",
+            level: "error",
+            format: fileFormat,
+            maxFiles: "14d"
+        }), 
+        new winston.transports.File({filename: "logs/error.log", level: "error", format: fileFormat})
     ]
 })
 
 export default logger;
-
-// debug -> Necesidad de entender un problema. (No produccion)
-// http -> Registrar una request HTTP. (No produccion)
-// info -> Cosas importantes que suceden --> Nutricion para monitoreo --> Happy Path
-// warning -> Error Path --> Problemas que no rompen la app pero que requieren atencion.
-// error -> Errores que no conocemos. ATENCION! Bug o problema para mejorar.
-// fatal -> Errores que rompen la app. ATENCION INMEDIATA! WAR ROOM
-// --> REALIZAR ROLLBACK -> Volver para atras la ultima version -> Y BUG-FIX
-
-// --- Flujo de deploy
-// -> Pruebas unitarias (clase 6) (Mucha IA para generar test)
-// -> Pruebas manuales (Happy path)
-// Despliegue a staging (ambiente copiado de prod. Para asegurarse de que todo funcione)
-// -> Despligue a produccion 
-// -> Monitoreo manual (revisar logs y metricas)
-// --> ROLLBACK si hay problemas
