@@ -1,4 +1,5 @@
 import CustomError from "../errors/custom-error.js";
+import logger from "../config/logger.js";
 
 export function errorHandler(err, req, res, next){
     const isCustomError = err instanceof CustomError;
@@ -7,9 +8,9 @@ export function errorHandler(err, req, res, next){
     const { statusCode, code, message } = customError;
 
     if(isCustomError){
-        console.warn("Custom error:", err.message)
+        logger.warn(`Custom error: ${err.message}`)
     } else{
-        console.error("Unexpected error:", err)
+        logger.error(`Unexpected error: ${err.message}`)
     }
 
     res.status(statusCode).json({status: "Error", error: code, message: message})

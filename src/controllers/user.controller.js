@@ -3,7 +3,8 @@ import UserService from "../services/user.service.js"
 class UserController {
     static async getUsers(req, res, next){
         try{
-            const users = await UserService.getAll()
+            const users = await UserService.getAll();
+            logger.info(`Usuarios encontrados. Cantidad encontrada: ${users.length}`);
             return res.status(200).json({statusCode: 200, message: "Usuarios encontrados.", payload: users})
         } catch(err){
             next(err)
@@ -14,6 +15,7 @@ class UserController {
         try{
             const { role } = req.query;
             const users = await UserService.getByRole({role});
+            logger.info(`Usuarios encontrados con rol: ${role}. Cantidad encontrada: ${users.length}`);
             return res.status(200).json({statusCode: 200, message: `Usuarios encontrados con rol: ${role}.`, payload: users})
         } catch(err){
             next(err)
@@ -28,6 +30,7 @@ class UserController {
         try{
             const { email } = req.query;
             const user = await UserService.getByEmail(email);
+            logger.info(`Usuario encontrado. Email: ${email}`);
             return res.status(200).json({statusCode: 200, message: "Usuario encontrado.", payload: user})
         } catch(err){
             next(err)
@@ -37,6 +40,7 @@ class UserController {
     static async getUserById(req, res, next){
         try{
             const user = await UserService.getById(req.params.uid);
+            logger.info(`Usuario encontrado. ID: ${req.params.uid}`);
             return res.status(200).json({statusCode: 200, message: "Usuario encontrado.", payload: user})
         } catch(err){
             next(err)
@@ -46,6 +50,7 @@ class UserController {
     static async createUser(req, res, next){
         try{
             const user = await UserService.createOneUser(req.body);
+            logger.info(`Usuario creado. ID: ${user._id}`);
             return res.status(201).json({statusCode: 201, message: "Usuario creado.", payload: user})
         } catch(err){
             next(err)
@@ -55,6 +60,7 @@ class UserController {
     static async updateUser(req, res, next){
         try{
             const user = await UserService.updateOneUser(req.params.uid, req.body);
+            logger.info(`Usuario actualizado. ID: ${req.params.uid}`);
             return res.status(200).json({statusCode: 200, message: "Usuario actualizado.", payload: user})
         } catch(err){
             next(err)
@@ -64,6 +70,7 @@ class UserController {
     static async deleteUser(req, res, next){
         try{
             const user = await UserService.deleteOneUser(req.params.uid);
+            logger.info(`Usuario eliminado. ID: ${req.params.uid}`);
             return res.status(200).json({statusCode: 200, message: "Usuario eliminado.", payload: user})
         } catch(err){
             next(err)

@@ -17,7 +17,7 @@ const customLevels = {
         fatal: "red bold",
         error: "red",
         warn: "yellow", 
-        info: "green",
+        info: "green bold",
         http: "magenta",
         debug: "blue"
     }
@@ -29,9 +29,9 @@ const logDir = path.join(__dirname, "../../logs");
 
 const consoleFormat = winston.format.combine(
     winston.format.colorize({all: true}),
-    winston.format.timestamp({format: "YYYY-MM-DD HH-mm-ss:ms"}),
+    winston.format.timestamp({format: " YYYY-MM-DD | HH:mm:ss:ms "}),
     winston.format.printf(({timestamp, level, message, stack}) => {
-        return `${timestamp} [${level}]: ${stack || message}`
+        return `[${timestamp}] [${level}]: ${stack || message}`
     })
 )
 
