@@ -1,0 +1,21 @@
+paths:
+  /api/health:
+    get:
+      tags:
+        - Health
+      summary: Get health status
+      responses:
+        "200":
+          $ref: "#/components/responses/HealthResponse"
+        default:
+          $ref: "#/components/responses/HealthError"
+      components:
+        responses:
+          HealthResponse:
+            description: Health response
+            content:
+              application/json:
+                schema:
+                  status:
+                    type: string
+                    example: "OK"

@@ -29,7 +29,7 @@ const logDir = path.join(__dirname, "../../logs");
 
 const consoleFormat = winston.format.combine(
     winston.format.colorize({all: true}),
-    winston.format.timestamp({format: " YYYY-MM-DD | HH:mm:ss:ms "}),
+    winston.format.timestamp({format: " YYYY-MM-DD | HH:mm:ss "}),
     winston.format.printf(({timestamp, level, message, stack}) => {
         return `[${timestamp}] [${level}]: ${stack || message}`
     })

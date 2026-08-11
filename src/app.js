@@ -1,8 +1,10 @@
 //! Imports
 
 import express from "express";
-import { env } from "./config/env.js"
+import { env } from "./config/env.js";
 import { errorHandler, notFoundHandler } from "./middlewares/handle-error.middleware.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpecs from "./config/swagger.js";
 
 // ! Routes
 
@@ -16,10 +18,11 @@ import OrderMockRoutes from "./mocks/routes/order.mocks.routes.js";
 import DeliveryRoutes from "./mocks/routes/delivery.mocks.routes.js";
 import logger from "./config/logger.js";
 
-
 // ! Middlewares
 
 const app = express();
+
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 app.use(express.json());
 
