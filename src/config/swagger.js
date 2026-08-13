@@ -2,28 +2,42 @@ import swaggerJSDoc from "swagger-jsdoc";
 import { env } from "./env.js";
 
 const schemas = {
-    Health: {
+    HealthStatus: {
         type: "object",
         properties: {
-            service: {
-                type: "string",
-                example: "ShipNow API",
-            },
-            environment: {
-                type: "string",
-                example: "development",
-            }
+            status: { type: "string", example: "OK" },
+            payload: { type: "string", example: "Server ON." }
+        }
+    },
+    UserStatus: {
+        type: "object",
+        properties: {
+            id: {type: "string", example: "6a623904e8abf4852ef163a5"},
+            first_name: {type: "string", example: "John"},
+            last_name: {type: "string", example: "Doe"},
+            email: {type: "string", example: "johndoe@hotmail.com"},
+            role: {type: "string", example: "user"}
         }
     }
 }
 
 const responses = {
     HealthResponse: {
-        description: "Response for health check endpoint.",
+        description: "Response for health check endpoint",
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/schemas/Health"
+                    $ref: "#/components/schemas/HealthStatus"
+                }
+            }
+        }
+    },
+    UserResponse: {
+        description: "Response method get users",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/schemas/UserStatus"
                 }
             }
         }
@@ -36,20 +50,23 @@ const swaggerSpecs = swaggerJSDoc({
         info: {
             title: "ShipNow API",
             version: "1.0.0",
-            description: "API logistica para gestion de usuarios y pedidos."
+            description: "API para la gestion de usuarios y pedidos de una logistica."
         },
         servers: [
             {
                 url: `http://localhost:${env.PORT ?? 3000}`,
                 description: "Servidor de desarrollo"
             }
-        ]
-        },
+        ],
+        tags: [
+            {name: "Health", description: "Returns the health status of our server"},
+            {name: "Users", description: "All list of users"},
+        ],
         components: {
-            schemas,
-            responses,
-        },
-    apis: [ "./src/docs/**/*.yaml" ]
+            schemas, responses
+        }
+    },
+    apis: ["./src/docs/**/*.yaml"]
 })
 
 export default swaggerSpecs;

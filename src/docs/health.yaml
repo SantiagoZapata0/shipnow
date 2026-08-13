@@ -3,19 +3,9 @@ paths:
     get:
       tags:
         - Health
-      summary: Get health status
+      summary: Server health status
+      description: Returns the health status of our server
       responses:
         "200":
           $ref: "#/components/responses/HealthResponse"
-        default:
-          $ref: "#/components/responses/HealthError"
-      components:
-        responses:
-          HealthResponse:
-            description: Health response
-            content:
-              application/json:
-                schema:
-                  status:
-                    type: string
-                    example: "OK"
+        

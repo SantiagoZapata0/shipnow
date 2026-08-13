@@ -1,10 +1,11 @@
 //! Imports
 
 import express from "express";
-import { env } from "./config/env.js";
-import { errorHandler, notFoundHandler } from "./middlewares/handle-error.middleware.js";
+import logger from "./config/logger.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpecs from "./config/swagger.js";
+import { env } from "./config/env.js";
+import { errorHandler, notFoundHandler } from "./middlewares/handle-error.middleware.js";
 
 // ! Routes
 
@@ -16,7 +17,6 @@ import ProductsRoutes from "./routes/products.routes.js";
 import UserMockRoutes from "./mocks/routes/user.mock.routes.js";
 import OrderMockRoutes from "./mocks/routes/order.mocks.routes.js";
 import DeliveryRoutes from "./mocks/routes/delivery.mocks.routes.js";
-import logger from "./config/logger.js";
 
 // ! Middlewares
 

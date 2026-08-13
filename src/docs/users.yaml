@@ -3,14 +3,9 @@ paths:
     get:
       tags:
         - Users
-      summary: Get all users
+      summary: Methods to get users
+      description: "All list of users"
       responses:
-        "200":
-          description: Una lista de usuarios
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/User"
+            "200":
+              $ref: "#/components/responses/UserResponse"
           

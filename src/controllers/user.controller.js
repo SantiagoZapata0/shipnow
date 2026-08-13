@@ -1,4 +1,5 @@
 import UserService from "../services/user.service.js"
+import logger from "../config/logger.js";
 
 class UserController {
     static async getUsers(req, res, next){
