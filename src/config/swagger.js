@@ -1,4 +1,5 @@
 import swaggerJSDoc from "swagger-jsdoc";
+import { USER_ROLES } from "../constants/constants.js"
 import { env } from "./env.js";
 
 const schemas = {
@@ -16,7 +17,7 @@ const schemas = {
             first_name: {type: "string", example: "John"},
             last_name: {type: "string", example: "Doe"},
             email: {type: "string", example: "johndoe@hotmail.com"},
-            role: {type: "string", example: "user"}
+            role: {type: "string", enum: Object.values(USER_ROLES), example: "user"}
         }
     }
 }
@@ -37,11 +38,18 @@ const responses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/schemas/UserStatus"
+                    type: "array",
+                    items: {
+                        $ref: "#/components/schemas/UserStatus"
+                    }
                 }
             }
         }
     }
+}
+
+const parameters = {
+    
 }
 
 const swaggerSpecs = swaggerJSDoc({
@@ -63,7 +71,7 @@ const swaggerSpecs = swaggerJSDoc({
             {name: "Users", description: "All list of users"},
         ],
         components: {
-            schemas, responses
+            schemas, responses, parameters
         }
     },
     apis: ["./src/docs/**/*.yaml"]
