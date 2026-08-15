@@ -17,6 +17,15 @@ const Parameters = {
                 type: "string"
         } 
     },
+    OidPathParam: {
+        name: "oid",
+        in: "path",
+        required: true,
+        description: "Unique order ID",
+        schema: {
+                type: "string"
+        } 
+    },
     RoleQueryParam: {
         name: "role",
         in: "query",

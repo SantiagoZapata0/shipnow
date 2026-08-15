@@ -16,7 +16,7 @@ paths:
         $ref: "#/components/RequestBodies/CreateUserRequest"
       description: Endpoint to create and return a user
       responses:
-        "200":
+        "201":
           $ref: "#/components/GoodResponses/CreateUserResponse" 
 
   /api/users/role:

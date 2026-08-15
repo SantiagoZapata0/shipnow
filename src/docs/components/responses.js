@@ -174,6 +174,63 @@ export const GoodResponses = {
                 }
             }
         }
+    },
+
+    // Order endpoints responses
+
+    GetAllOrdersResponse: {
+        description: "Response for get all orders endpoint",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/Schemas/GetAllOrdersStatus"
+                }
+            }
+        }
+    },
+
+    CreateOrderResponse: {
+        description: "Response upon creating a order",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/Schemas/CreateOrderStatus"
+                }
+            }
+        }
+    },
+
+    GetOrderByIdResponse: {
+        description: "Response for get order by id endpoint",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/Schemas/GetOrderByIdStatus"
+                }
+            }
+        }
+    },
+
+    UpdateOrderResponse: {
+        description: "Response when updating a order",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/Schemas/UpdateOrderStatus"
+                }
+            }
+        }
+    },
+
+    DeleteOrderResponse: {
+        description: "Response when deleting a order",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/Schemas/DeleteOrderStatus"
+                }
+            }
+        }
     }
 }
 

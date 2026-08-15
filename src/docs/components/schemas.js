@@ -266,6 +266,170 @@ const Schemas = {
                 ]
             }
         }
+    },
+
+    //* Order status
+
+    GetAllOrdersStatus: {
+        type: "object",
+        properties: {
+            statusCode: { type: "number", example: 200},
+            message: { type: "string", example: "Orders found"},
+            payload: { type: "array", example: [
+                {
+                    _id: "6a67d7e4209a976k2ldf3da1",
+                    user: "6a67d75d200bk66028df3da0",
+                    items: [
+                        {
+                            product: "6a67d62l0p9a976028df3d95",
+                            quantity: 2,
+                            _id: "6a67d7e4200pld6028df3da2"
+                        },
+                        {
+                            product: "6a67d61lmg9a976028df3d96",
+                            quantity: 1,
+                            _id: "6a67d7e4209a94g028df3fa5"
+                        }
+                    ],
+                    total: 14900,
+                    status: "payment_validated",
+                    priority: "high",
+                    __v: 0,
+                    createdAt: "2027-01-01T00:00:00.000Z",
+                    updatedAt: "2027-01-01T00:00:00.000Z"  
+                },
+                {
+                    _id: "6a67d7e4209a976k2ldf3da1",
+                    user: "6a67d75d200bk66028df3da0",
+                    items: [
+                        {
+                            product: "6a67d62l0p9a976028df3d95",
+                            quantity: 2,
+                            _id: "6a67d7e4200pld6028df3da2"
+                        },
+                        {
+                            product: "6a67d61lmg9a976028df3d96",
+                            quantity: 1,
+                            _id: "6a67d7e4209a94g028df3fa5"
+                        }
+                    ],
+                    total: 14900,
+                    status: "pending",
+                    priority: "low",
+                    __v: 0,
+                    createdAt: "2027-01-01T00:00:00.000Z",
+                    updatedAt: "2027-01-01T00:00:00.000Z"  
+                }
+            ]}
+        }
+    },
+    CreateOrderStatus:{
+        type: "object",
+        properties: {
+            statusCode: { type: "number", example: 201},
+            message: { type: "string", example: "Order created"},
+            payload: { type: "object", example: {
+                    user: "6a67d75d200bk66028df3da0",
+                    items: [
+                        {
+                            product: "6a67d62l0p9a976028df3d95",
+                            quantity: 2,
+                            _id: "6a67d7e4200pld6028df3da2"
+                        },
+                        {
+                            product: "6a67d61lmg9a976028df3d96",
+                            quantity: 1,
+                            _id: "6a67d7e4209a94g028df3fa5"
+                        }
+                    ],
+                    total: 14900,
+                    status: "payment_validated",
+                    priority: "high",
+                    _id: "6a67d7e4209a976k2ldf3da1",
+                    createdAt: "2027-01-01T00:00:00.000Z",
+                    updatedAt: "2027-01-01T00:00:00.000Z",
+                    __v: 0
+            }}
+        }
+    },
+    GetOrderByIdStatus: {
+        type: "object",
+        properties: {
+            statusCode: { type: "number", example: 200},
+            message: { type: "string", example: "Order found"},
+            payload: { type: "object", example: {
+                _id: "6a67d7e4209a976k2ldf3da1",
+                user: "6a67d75d200bk66028df3da0",
+                    items: [
+                        {
+                            product: "6a67d62l0p9a976028df3d95",
+                            quantity: 2,
+                            _id: "6a67d7e4200pld6028df3da2"
+                        },
+                        {
+                            product: "6a67d61lmg9a976028df3d96",
+                            quantity: 1,
+                            _id: "6a67d7e4209a94g028df3fa5"
+                        }
+                    ],
+                    total: 14900,
+                    status: "payment_validated",
+                    priority: "high",
+                    createdAt: "2027-01-01T00:00:00.000Z",
+                    updatedAt: "2027-01-01T00:00:00.000Z",
+                    __v: 0
+            }}
+        }
+    },
+
+    UpdateOrderStatus: {
+        type: "object",
+        properties: {
+            statusCode: { type: "number", example: 200},
+            message: { type: "string", example: "Order updated"},
+            payload: { type: "object", example: {
+                _id: "6a67d7e4209a976k2ldf3da1",
+                user: "6a67d75d200bk66028df3da0",
+                    items: [
+                        {
+                            product: "6a67d62l0p9a976028df3d95",
+                            quantity: 15,
+                            _id: "6a67d7e4200pld6028df3da2"
+                        },
+                    ],
+                    total: 63000,
+                    status: "payment_validated",
+                    priority: "high",
+                    createdAt: "2027-01-01T00:00:00.000Z",
+                    updatedAt: "2027-01-01T00:00:00.000Z",
+                    __v: 0
+            }}
+        }
+    },
+
+    DeleteOrderStatus: {
+        type: "object",
+        properties: {
+           statusCode: { type: "number", example: 200},
+            message: { type: "string", example: "Order deleted"},
+            payload: { type: "object", example: {
+                _id: "6a67d7e4209a976k2ldf3da1",
+                user: "6a67d75d200bk66028df3da0",
+                    items: [
+                        {
+                            product: "6a67d62l0p9a976028df3d95",
+                            quantity: 15,
+                            _id: "6a67d7e4200pld6028df3da2"
+                        },
+                    ],
+                    total: 63000,
+                    status: "payment_validated",
+                    priority: "high",
+                    createdAt: "2027-01-01T00:00:00.000Z",
+                    updatedAt: "2027-01-01T00:00:00.000Z",
+                    __v: 0
+            }} 
+        }
     }
 }
 

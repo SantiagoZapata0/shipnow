@@ -15,7 +15,7 @@ paths:
       requestBody:
         $ref: "#/components/RequestBodies/CreateProductRequest"
       responses:
-        "200":
+        "201":
           $ref: "#/components/GoodResponses/CreateProductResponse"
   
   /api/products/{pid}:

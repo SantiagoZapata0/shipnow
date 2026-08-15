@@ -1,0 +1,49 @@
+paths:
+  /api/orders:
+    get:
+      tags:
+        - Orders
+      summary: Get all orders
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/GetAllOrdersResponse"
+    post:
+      tags:
+        - Orders
+      summary: Create an order
+      requestBody:
+        $ref: "#/components/RequestBodies/CreateOrderRequest"
+      responses:
+        "201":
+          $ref: "#/components/GoodResponses/CreateOrderResponse"
+
+  /api/orders/{oid}:
+    get:
+      tags:
+        - Orders
+      summary: Get order by ID
+      parameters:
+        - $ref: "#/components/Parameters/OidPathParam"
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/GetOrderByIdResponse"
+    put:
+      tags:
+        - Orders
+      summary: Find by ID and update an order
+      parameters:
+        - $ref: "#/components/Parameters/OidPathParam"
+      requestBody:
+          $ref: "#/components/RequestBodies/UpdateOrderRequest"
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/UpdateOrderResponse"
+    delete:
+      tags:
+        - Orders
+      summary: Find by ID and delete an order
+      parameters:
+        - $ref: "#/components/Parameters/OidPathParam"
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/DeleteOrderResponse"

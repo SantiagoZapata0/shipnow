@@ -77,5 +77,61 @@ export const RequestBodies = {
                 }
             }
         }
+    },
+
+    // Order endpoints request bodies
+
+    CreateOrderRequest: {
+        description: "Information required to create a product",
+        required: true,
+        content: {
+            "application/json": {
+                schema: {
+                    type: "object",
+                    required: ["user", "items", "status", "priority"],
+                    properties: {
+                        user: { type: "string", example: "6a67d75d200bk66028df3da0"},
+                        items: { type: "array", example: [
+                            {
+                                product: "6a67d62l0p9a976028df3d95",
+                                quantity: 2,
+                            },
+                            {
+                                product: "6a67d61lmg9a976028df3d96",
+                                quantity: 1,
+                            }
+                        ]},
+                        status: { type: "string", example: "pending"},
+                        priority: { type: "string", example: "medium"}
+                    }
+                }
+            }
+        }
+    },
+    UpdateOrderRequest: {
+        description: "Information required to update a product. It can be one or several properties.",
+        required: true,
+        content: {
+            "application/json": {
+                schema: {
+                    type: "object",
+                    properties: {
+                        user: { type: "string", example: "6a67d75d200bk66028df3da0"},
+                        items: { type: "array", example: [
+                            {
+                                product: "6a67d62l0p9a976028df3d95",
+                                quantity: 2,
+                            },
+                            {
+                                product: "6a67d61lmg9a976028df3d96",
+                                quantity: 1,
+                            }
+                        ]},
+                        status: { type: "string", example: "pending"},
+                        priority: { type: "string", example: "medium"}
+                    }
+                }
+            }
+        }
     }
 }
