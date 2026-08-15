@@ -1,0 +1,63 @@
+paths:
+  /api/products:
+    get:
+      tags:
+        - Products
+      summary: Get all products
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/GetAllProductsResponse"
+
+    post:
+      tags:
+        - Products
+      summary: Create an product
+      requestBody:
+        $ref: "#/components/RequestBodies/CreateProductRequest"
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/CreateProductResponse"
+  
+  /api/products/{pid}:
+    get:
+      tags:
+        - Products
+      summary: Get product by PID (Product ID)
+      parameters:
+        - $ref: "#/components/Parameters/PidPathParam"
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/GetProductByIdResponse"
+
+    put:
+      tags:
+        - Products
+      summary: Update product by PID (Product ID)
+      parameters:
+        - $ref: "#/components/Parameters/PidPathParam"
+      requestBody:
+        $ref: "#/components/RequestBodies/UpdateProductRequest"
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/UpdateProductResponse"
+
+    delete:
+      tags:
+        - Products
+      summary: Delete product by PID (Product ID)
+      parameters:
+        - $ref: "#/components/Parameters/PidPathParam"
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/DeleteProductResponse"
+
+  /api/products/available:
+    get:
+      tags:
+        - Products
+      summary: Get all available products
+      responses:
+        "200":
+         $ref: "#/components/GoodResponses/GetAvailableProductsResponse"
+        
+        

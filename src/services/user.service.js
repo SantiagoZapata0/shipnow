@@ -38,7 +38,7 @@ class UserService{
         }));
     }
 
-    static async getByEmail({email}){
+    static async getByEmail(email){
 
         const userByEmail = await UserRepository.getByEmail(email)
 

@@ -7,5 +7,5 @@ paths:
       description: Returns the health status of our server
       responses:
         "200":
-          $ref: "#/components/responses/HealthResponse"
+          $ref: "#/components/GoodResponses/HealthResponse"
         

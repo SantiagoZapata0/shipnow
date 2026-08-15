@@ -2,55 +2,12 @@ import swaggerJSDoc from "swagger-jsdoc";
 import { USER_ROLES } from "../constants/constants.js"
 import { env } from "./env.js";
 
-const schemas = {
-    HealthStatus: {
-        type: "object",
-        properties: {
-            status: { type: "string", example: "OK" },
-            payload: { type: "string", example: "Server ON." }
-        }
-    },
-    UserStatus: {
-        type: "object",
-        properties: {
-            id: {type: "string", example: "6a623904e8abf4852ef163a5"},
-            first_name: {type: "string", example: "John"},
-            last_name: {type: "string", example: "Doe"},
-            email: {type: "string", example: "johndoe@hotmail.com"},
-            role: {type: "string", enum: Object.values(USER_ROLES), example: "user"}
-        }
-    }
-}
+//* Components imports
 
-const responses = {
-    HealthResponse: {
-        description: "Response for health check endpoint",
-        content: {
-            "application/json": {
-                schema: {
-                    $ref: "#/components/schemas/HealthStatus"
-                }
-            }
-        }
-    },
-    UserResponse: {
-        description: "Response method get users",
-        content: {
-            "application/json": {
-                schema: {
-                    type: "array",
-                    items: {
-                        $ref: "#/components/schemas/UserStatus"
-                    }
-                }
-            }
-        }
-    }
-}
-
-const parameters = {
-    
-}
+import { GoodResponses, BadResponses } from "../docs/components/responses.js";
+import { RequestBodies } from "../docs/components/requestBodies.js";
+import Schemas from "../docs/components/schemas.js";
+import Parameters from "../docs/components/parameters.js";
 
 const swaggerSpecs = swaggerJSDoc({
     definition: {
@@ -68,10 +25,15 @@ const swaggerSpecs = swaggerJSDoc({
         ],
         tags: [
             {name: "Health", description: "Returns the health status of our server"},
-            {name: "Users", description: "All list of users"},
+            {name: "Logger", description: "Endpoints for managing logger"},
+            {name: "Users", description: "Endpoints for managing users"},
+            {name: "Products", description: "Endpoints for managing products"},
+            {name: "Orders", description: "Endpoints for managing orders"},
+            {name: "Deliveries", description: "Endpoints for managing deliveries"},
+            {name: "Mocks", description: "Endpoints for managing mocks"}
         ],
         components: {
-            schemas, responses, parameters
+            Schemas, GoodResponses, BadResponses, Parameters, RequestBodies
         }
     },
     apis: ["./src/docs/**/*.yaml"]

@@ -1,0 +1,9 @@
+paths:
+  /logger-test:
+    get:
+      tags:
+        - Logger
+      summary: Log check endpoint
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/LoggerResponse"

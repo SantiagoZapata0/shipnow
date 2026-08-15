@@ -11,6 +11,8 @@ import { errorHandler, notFoundHandler } from "./middlewares/handle-error.middle
 
 import UsersRoutes from "./routes/users.routes.js";
 import ProductsRoutes from "./routes/products.routes.js";
+import OrdersRoutes from "./routes/orders.routes.js";
+import DeliveriesRoutes from "./routes/deliveries.routes.js";
 
 // ! Mock routes
 
@@ -44,13 +46,15 @@ app.get("/logger-test", (req, res) => {
     logger.warn("Warning log");
     logger.error("Error log");
     logger.fatal("Fatal log");
-    res.status(200).json({status: "OK", payload: "Logger test completed."})
+    res.status(200).json({status: "OK", message: "Logger test completed."})
 })
 
 // ! Routes
 
 app.use("/api/users", UsersRoutes);
 app.use("/api/products", ProductsRoutes);
+app.use("/api/orders", OrdersRoutes);
+app.use("/api/deliveries", DeliveriesRoutes);
 
 if(env.NODE_ENV !== "production"){
     app.use("/api/mocks", UserMockRoutes);

@@ -3,9 +3,81 @@ paths:
     get:
       tags:
         - Users
-      summary: Methods to get users
-      description: "All list of users"
+      summary: Get all users
+      description: Returns a list of all users.
       responses:
             "200":
-              $ref: "#/components/responses/UserResponse"
-          
+              $ref: "#/components/GoodResponses/GetAllUsersResponse"
+    post:
+      tags:
+        - Users
+      summary: Create an user.
+      requestBody:
+        $ref: "#/components/RequestBodies/CreateUserRequest"
+      description: Endpoint to create and return a user
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/CreateUserResponse" 
+
+  /api/users/role:
+    get:
+      tags:
+        - Users
+      summary: Get user by role.
+      parameters:
+        - $ref: "#/components/Parameters/RoleQueryParam"
+      description: Returns a users by their role.
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/GetUserByRoleResponse"
+
+  /api/users/email:
+    get:
+      tags:
+        - Users
+      summary: Get user by email.
+      parameters:
+        - $ref: "#/components/Parameters/EmailQueryParam"
+      description: >
+        Returns a user by their email. Warning: This method returns the password because it is used for authentication purposes; it is a route originally protected by role and cannot be accessed by anyone other than administrators. 
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/GetUserByEmailResponse"
+
+  /api/users/{uid}:
+    get:
+      tags:
+        - Users
+      summary: Get user by UID (User ID)
+      parameters:
+        - $ref: "#/components/Parameters/UidPathParam"
+      description: Returns a user by their ID.
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/GetUserByIdResponse"
+
+    put:
+      tags:
+        - Users
+      summary: Find by ID and update user.
+      parameters:
+        - $ref: "#/components/Parameters/UidPathParam"
+      requestBody:
+        $ref: "#/components/RequestBodies/UpdateUserRequest"
+      description: >
+        Finds and returns an updated object based on the modified information.
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/UpdateUserResponse"
+
+    delete:
+      tags:
+        - Users
+      summary: Find by ID and delete user.
+      parameters:
+        - $ref: "#/components/Parameters/UidPathParam"
+      description: >
+        Finds and returns an deleted object.
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/DeletedUserResponse"
