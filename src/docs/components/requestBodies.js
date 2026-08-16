@@ -133,5 +133,48 @@ export const RequestBodies = {
                 }
             }
         }
+    },
+
+    // Order endpoints request bodies
+
+    CreateDeliveryRequest: {
+        description: "Information required to create a delivery. The STATUS and COURIER fields are not mandatory, so deliveries can be picked up at the branch. Additionally, if no STATUS is specified, it will default to PENDING.",
+        required: true,
+        content: {
+            "application/json": {
+                schema: {
+                    type: "object",
+                    required: ["order", "address", "estimatedFrom, estimatedTo"],
+                    properties: {
+                        order: { type: "string", example: "6a67d8a1209a976028eg2dcd"},
+                        status: { type: "string", example: "pending"},
+                        courier: { type: "string", example: "6a67d8a1209a976028eg2d3a"},
+                        address: { type: "string", example: "1275 Bogan Crossing Apt. 825"},
+                        estimatedFrom: { type: "string", example: "2027-01-01T00:00:00.000Z"},
+                        estimatedTo: { type: "string", example: "2027-01-07T00:00:00.000Z"}
+                    }
+                }
+            }
+        }
+    },
+
+    UpdateDeliveryRequest: {
+        description: "Information required to update a delivery. It can be one or several properties.",
+        required: true,
+        content: {
+            "application/json": {
+                schema: {
+                    type: "object",
+                    properties: {
+                        order: { type: "string", example: "6a67d8a1209a976028eg2dcd"},
+                        status: { type: "string", example: "pending"},
+                        courier: { type: "string", example: "6a67d8a1209a976028eg2d3a"},
+                        address: { type: "string", example: "1275 Bogan Crossing Apt. 825"},
+                        estimatedFrom: { type: "string", example: "2027-01-01T00:00:00.000Z"},
+                        estimatedTo: { type: "string", example: "2027-01-07T00:00:00.000Z"}
+                    }
+                }
+            }
+        }
     }
 }

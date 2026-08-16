@@ -430,6 +430,116 @@ const Schemas = {
                     __v: 0
             }} 
         }
+    },
+
+    //* Delivery status
+
+    GetAllDeliveriesStatus: {
+        type: "object",
+        properties: {
+            statusCode: { type: "number", example: 200},
+            message: { type: "string", example: "Deliveries found"},
+            payload: { type: "array", example: [
+                {
+                    _id: "6a67d8a1209a976028eg2dcd",
+                    order: "6a67d7e42rg6976028df3da1",
+                    status: "not_delivered",
+                    address: "1276 Bogan Crossing Apt. 827",
+                    estimatedFrom: "2027-01-01T00:00:00.000Z",
+                    estimatedTo: "2027-01-07T00:00:00.000Z",
+                    __v: 0,
+                    createdAt: "2027-01-01T00:00:00.000Z",
+                    updatedAt: "2027-01-01T00:00:00.000Z"
+                },
+                {
+                    _id: "6a67d8a1209a976028eg2dcd",
+                    order: "6a67d7e42rg6976028df3da1",
+                    status: "pending",
+                    address: "62520 Eula View Suite 374",
+                    estimatedFrom: "2027-01-01T00:00:00.000Z",
+                    estimatedTo: "2027-01-07T00:00:00.000Z",
+                    __v: 0,
+                    createdAt: "2027-01-01T00:00:00.000Z",
+                    updatedAt: "2027-01-01T00:00:00.000Z"
+                }
+            ]}
+        }
+    },
+
+    GetDeliveryByIdStatus: {
+        type: "object",
+        properties: {
+            statusCode: { type: "number", example: 200},
+            message: { type: "string", example: "Delivery found"},
+            payload: { type: "object", example: {
+                    _id: "6a67d8a1209a976028eg2dcd",
+                    order: "6a67d7e42rg6976028df3da1",
+                    status: "not_delivered",
+                    address: "1276 Bogan Crossing Apt. 827",
+                    estimatedFrom: "2027-01-01T00:00:00.000Z",
+                    estimatedTo: "2027-01-07T00:00:00.000Z",
+                    __v: 0,
+                    createdAt: "2027-01-01T00:00:00.000Z",
+                    updatedAt: "2027-01-01T00:00:00.000Z"
+            }}
+        }
+    },
+
+    CreateDeliveryStatus: {
+        type: "object",
+        properties: {
+            statusCode: { type: "number", example: 201},
+            message: { type: "string", example: "Delivery created"},
+            payload: { type: "object", example: {
+                    order: "6a67d7e42rg6976028df3da1",
+                    status: "not_delivered",
+                    address: "1276 Bogan Crossing Apt. 827",
+                    estimatedFrom: "2027-01-01T00:00:00.000Z",
+                    estimatedTo: "2027-01-07T00:00:00.000Z",
+                    _id: "6a67d8a1209a976028eg2dcd",
+                    createdAt: "2027-01-01T00:00:00.000Z",
+                    updatedAt: "2027-01-01T00:00:00.000Z",
+                    __v: 0,
+            }}
+        }
+    },
+
+    UpdateDeliveryStatus: {
+        type: "object",
+        properties: {
+            statusCode: { type: "number", example: 200},
+            message: { type: "string", example: "Delivery updated"},
+            payload: { type: "object", example: {
+                    _id: "6a67d8a1209a976028eg2dcd",
+                    order: "6a67d7e42rg6976028df3da1",
+                    status: "not_delivered",
+                    address: "1276 Bogan Crossing Apt. 827",
+                    estimatedFrom: "2027-01-01T00:00:00.000Z",
+                    estimatedTo: "2027-01-07T00:00:00.000Z",
+                    __v: 0,
+                    createdAt: "2027-01-01T00:00:00.000Z",
+                    updatedAt: "2027-01-01T00:00:00.000Z"
+            }}
+        }
+    },
+
+    DeleteDeliveryStatus: {
+        type: "object",
+        properties: {
+            statusCode: { type: "number", example: 200},
+            message: { type: "string", example: "Delivery deleted"},
+            payload: { type: "object", example: {
+                    _id: "6a67d8a1209a976028eg2dcd",
+                    order: "6a67d7e42rg6976028df3da1",
+                    status: "not_delivered",
+                    address: "1276 Bogan Crossing Apt. 827",
+                    estimatedFrom: "2027-01-01T00:00:00.000Z",
+                    estimatedTo: "2027-01-07T00:00:00.000Z",
+                    __v: 0,
+                    createdAt: "2027-01-01T00:00:00.000Z",
+                    updatedAt: "2027-01-01T00:00:00.000Z"
+            }}
+        }
     }
 }
 

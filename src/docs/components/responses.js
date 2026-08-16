@@ -189,6 +189,17 @@ export const GoodResponses = {
         }
     },
 
+    GetOrderByIdResponse: {
+        description: "Response for get order by id endpoint",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/Schemas/GetOrderByIdStatus"
+                }
+            }
+        }
+    },
+
     CreateOrderResponse: {
         description: "Response upon creating a order",
         content: {
@@ -200,16 +211,6 @@ export const GoodResponses = {
         }
     },
 
-    GetOrderByIdResponse: {
-        description: "Response for get order by id endpoint",
-        content: {
-            "application/json": {
-                schema: {
-                    $ref: "#/components/Schemas/GetOrderByIdStatus"
-                }
-            }
-        }
-    },
 
     UpdateOrderResponse: {
         description: "Response when updating a order",
@@ -231,7 +232,61 @@ export const GoodResponses = {
                 }
             }
         }
-    }
+    },
+
+    // Delivery endpoints responses
+
+    GetAllDeliveriesResponse: {
+        description: "Response for get all deliveries endpoint",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/Schemas/GetAllDeliveriesStatus"
+                }
+            }
+        }
+    },
+    GetDeliveryByIdResponse: {
+        description: "Response for get delivery by id endpoint",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/Schemas/GetDeliveryByIdStatus"
+                }
+            }
+        }
+    },
+    CreateDeliveryResponse: {
+        description: "Response upon creating a delivery",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/Schemas/CreateDeliveryStatus"
+                }
+            }
+        }
+    },
+    UpdateDeliveryResponse: {
+        description: "Response when updating a delivery",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/Schemas/UpdateDeliveryStatus"
+                }
+            }
+        }
+    },
+    DeleteDeliveryResponse: {
+        description: "Response when deleting a delivery",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/Schemas/DeleteDeliveryStatus"
+                }
+            }
+        }
+    },
+    
 }
 
 export const BadResponses = {

@@ -26,6 +26,15 @@ const Parameters = {
                 type: "string"
         } 
     },
+    DidPathParam: {
+        name: "did",
+        in: "path",
+        required: true,
+        description: "Unique delivery ID",
+        schema: {
+                type: "string"
+        } 
+    },
     RoleQueryParam: {
         name: "role",
         in: "query",

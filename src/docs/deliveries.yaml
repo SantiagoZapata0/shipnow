@@ -1,0 +1,49 @@
+paths:
+  /api/deliveries:
+    get:
+      tags:
+        - Deliveries
+      summary: Get all deliveries
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/GetAllDeliveriesResponse"
+    post:
+      tags:
+        - Deliveries
+      summary: Create an delivery
+      requestBody:
+        $ref: "#/components/RequestBodies/CreateDeliveryRequest"
+      responses:
+        "201":
+          $ref: "#/components/GoodResponses/CreateDeliveryResponse"
+
+  /api/deliveries/{did}:
+    get:
+      tags:
+        - Deliveries
+      summary: Get delivery by ID
+      parameters:
+        - $ref: "#/components/Parameters/DidPathParam"
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/GetDeliveryByIdResponse"
+    put:
+      tags:
+        - Deliveries
+      summary: Find by ID and update an delivery
+      parameters:
+        - $ref: "#/components/Parameters/DidPathParam"
+      requestBody:
+          $ref: "#/components/RequestBodies/UpdateDeliveryRequest"
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/UpdateDeliveryResponse"
+    delete:
+      tags:
+        - Deliveries
+      summary: Find by ID and delete an delivery
+      parameters:
+        - $ref: "#/components/Parameters/DidPathParam"
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/DeleteDeliveryResponse"
