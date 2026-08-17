@@ -12,7 +12,7 @@ class DeliveryMockService{
         }
 
         const couriers = await UserRepository.getFor({role: USER_ROLES.COURIER});
-        const orders = await OrderRepository.getOrders();
+        const orders = await OrderRepository.getAll();
         const statusAvailables = Object.values(DELIVERY_STATUS);
 
         if(orders.length < 1){

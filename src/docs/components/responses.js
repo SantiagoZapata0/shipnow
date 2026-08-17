@@ -113,7 +113,7 @@ export const GoodResponses = {
         }
     },
 
-    // Product endpoints responses
+    //* Product endpoints responses
 
     GetAllProductsResponse: {
         description: "Response for get all users endpoint",
@@ -176,7 +176,7 @@ export const GoodResponses = {
         }
     },
 
-    // Order endpoints responses
+    //* Order endpoints responses
 
     GetAllOrdersResponse: {
         description: "Response for get all orders endpoint",
@@ -234,7 +234,7 @@ export const GoodResponses = {
         }
     },
 
-    // Delivery endpoints responses
+    //* Delivery endpoints responses
 
     GetAllDeliveriesResponse: {
         description: "Response for get all deliveries endpoint",
@@ -286,6 +286,74 @@ export const GoodResponses = {
             }
         }
     },
+
+    //* Mock endpoints responses
+
+    MockingDeliveriesResponse: {
+        description: "Response when a delivery mock is generated",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/Schemas/MockingDeliveriesStatus"
+                }
+            }
+        }
+    },
+
+    GenerateDeliveriesResponse: {
+        description: "Response when a delivery mock is generated and saved to the database.",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/Schemas/GenerateDeliveriesStatus"
+                }
+            }
+        }
+    },
+
+    MockingOrdersResponse: {
+        description: "Response when a order mock is generated",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/Schemas/MockingOrdersStatus"
+                }
+            }
+        }
+    },
+
+    GenerateOrdersResponse: {
+        description: "Response when a order mock is generated and saved to the database",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/Schemas/GenerateOrdersStatus"
+                }
+            }
+        }
+    },
+
+    MockingUsersResponse: {
+        description: "Response when a user mock is generated",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/Schemas/MockingUsersStatus"
+                }
+            }
+        }
+    },
+    
+    GenerateUsersResponse: {
+        description: "Response when a user mock is generated and saved to database",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/Schemas/GenerateUsersStatus"
+                }
+            }
+        }
+    }
     
 }
 

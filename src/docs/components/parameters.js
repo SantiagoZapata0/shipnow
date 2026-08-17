@@ -52,6 +52,15 @@ const Parameters = {
         schema: {
             type: "string"
         }
+    },
+    CountQueryParam:{
+        name: "count",
+        in: "query",
+        required: true,
+        description: "Number of desired orders",
+        schema:{
+            type: "number"
+        }
     }
 }
 

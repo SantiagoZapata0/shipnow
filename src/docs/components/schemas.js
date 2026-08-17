@@ -540,6 +540,198 @@ const Schemas = {
                     updatedAt: "2027-01-01T00:00:00.000Z"
             }}
         }
+    },
+
+    //* Mock status
+
+    MockingDeliveriesStatus: {
+        type: "object",
+        properties: {
+            statusCode: { type: "number", example: 200},
+            message: { type: "string", example: "Delivery mocks generated"},
+            payload: { type: "array", example: [
+                {
+                    order: "6a67d7r5209a976359df30a5",
+                    status: "pending",
+                    address: "7300 Weimann Forge Apt. 275",
+                    estimatedFrom: "2027-01-01T00:00:00.000Z",
+                    estimatedTo: "2027-01-07T00:00:00.000Z"
+                },
+                {
+                    order: "6a67d7r5209a976359df30a5",
+                    courier: "6a67d43g308a9762k7df3d8f",
+                    status: "on_the_way",
+                    address: "715 Cedar Street Suite 825",
+                    estimatedFrom: "2027-01-01T00:00:00.000Z",
+                    estimatedTo: "2027-01-07T00:00:00.000Z"
+                }
+            ]}
+            }
+    },
+
+    GenerateDeliveriesStatus: {
+        type: "object",
+        properties: {
+            statusCode: { type: "number", example: 201},
+            message: { type: "string", example: "Delivery mocks generated and saved to the database "},
+            payload: { type: "array", example: [
+                {
+                    order: "6a67d7r5209a976359df30a5",
+                    status: "pending",
+                    address: "7300 Weimann Forge Apt. 275",
+                    estimatedFrom: "2027-01-01T00:00:00.000Z",
+                    estimatedTo: "2027-01-07T00:00:00.000Z"
+                },
+                {
+                    order: "6a67d7r5209a976359df30a5",
+                    courier: "6a67d43g308a9762k7df3d8f",
+                    status: "on_the_way",
+                    address: "715 Cedar Street Suite 825",
+                    estimatedFrom: "2027-01-01T00:00:00.000Z",
+                    estimatedTo: "2027-01-07T00:00:00.000Z"
+                }
+            ]}
+        }
+    },
+
+    MockingOrdersStatus: {
+        type: "object",
+        properties: {
+            statusCode: { type: "number", example: 200},
+            message: { type: "string", example: "Order mocks generated"},
+            payload: { type: "array", example: [
+                {
+                    user: "6a67d75d200bk66028df3da0",
+                    items: [
+                        {
+                            product: "6a67d62l0p9a976028df3d95",
+                            quantity: 2,
+                            _id: "6a67d7e4200pld6028df3da2"
+                        },
+                        {
+                            product: "6a67d61lmg9a976028df3d96",
+                            quantity: 1,
+                            _id: "6a67d7e4209a94g028df3fa5"
+                        }
+                    ],
+                    total: 14900,
+                    status: "payment_validated",
+                    priority: "high",
+                },
+                {
+                    user: "6a67d75d200bk66028df3da0",
+                    items: [
+                        {
+                            product: "6a67d62l0p9a976028df3d95",
+                            quantity: 5,
+                            _id: "6a67d7e4200pld6028df3da2"
+                        },
+                        {
+                            product: "6a67d61lmg9a976028df3d96",
+                            quantity: 25,
+                            _id: "6a67d7e4209a94g028df3fa5"
+                        }
+                    ],
+                    total: 120000,
+                    status: "pending",
+                    priority: "medium",
+                }
+            ]}
+        }
+    },
+
+    GenerateOrdersStatus: {
+        type: "object",
+        properties: {
+            statusCode: { type: "number", example: 201},
+            message: { type: "string", example: "Order mocks generated and saved to the database"},
+            payload: { type: "array", example: [
+                {
+                    user: "6a67d75d200bk66028df3da0",
+                    items: [
+                        {
+                            product: "6a67d62l0p9a976028df3d95",
+                            quantity: 2,
+                            _id: "6a67d7e4200pld6028df3da2"
+                        },
+                        {
+                            product: "6a67d61lmg9a976028df3d96",
+                            quantity: 1,
+                            _id: "6a67d7e4209a94g028df3fa5"
+                        }
+                    ],
+                    total: 14900,
+                    status: "payment_validated",
+                    priority: "high",
+                },
+                {
+                    user: "6a67d75d200bk66028df3da0",
+                    items: [
+                        {
+                            product: "6a67d62l0p9a976028df3d95",
+                            quantity: 5,
+                            _id: "6a67d7e4200pld6028df3da2"
+                        },
+                        {
+                            product: "6a67d61lmg9a976028df3d96",
+                            quantity: 25,
+                            _id: "6a67d7e4209a94g028df3fa5"
+                        }
+                    ],
+                    total: 120000,
+                    status: "pending",
+                    priority: "medium",
+                }
+            ]}
+        }
+    },
+
+    MockingUsersStatus: {
+        type: "object",
+        properties: {
+            statusCode: { type: "number", example: 200},
+            message: { type: "string", example: "User mocks generated"},
+            payload: { type: "array", example: [
+                {
+                    first_name: "Paolo",
+                    last_name: "Sawayn",
+                    email: "Margaret_Roberts@hotmail.com",
+                    password: "X6eymIacrydx4vC",
+                    role: "courier"
+		        },
+                {
+                    first_name: "Osborne",
+                    last_name: "Goyette",
+                    email: "Mable.Lesch@hotmail.com",
+                    password: "AGuuuIKd1FoWLu_",
+                    role: "user"
+		        }
+            ]}
+        }
+    },
+
+    GenerateUsersStatus: {
+        type: "object",
+        properties: {
+            statusCode: { type: "number", example: 201},
+            message: { type: "string", example: "User mocks generated and saved to the database"},
+            payload: { type: "array", example: [
+                {
+                    first_name: "Paolo",
+                    last_name: "Sawayn",
+                    email: "Margaret_Roberts@hotmail.com",
+                    password: "X6eymIacrydx4vC",
+                    role: "courier"
+		        },
+                {
+                    first_name: "Osborne",
+                    last_name: "Goyette",
+                    email: "Mable.Lesch@hotmail.com",
+                    password: "AGuuuIKd1FoWLu_",
+                    role: "user"
+		        }
+            ]}
+        }
     }
 }
 

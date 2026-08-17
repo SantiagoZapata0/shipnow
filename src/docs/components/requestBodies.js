@@ -176,5 +176,22 @@ export const RequestBodies = {
                 }
             }
         }
+    },
+
+    // Mocks endpoints request body
+
+    SaveToDbAndCountRequest: {
+        description: "Information required to generate a mocks. The option to save to database is not necessarily true.",
+        content: {
+            "application/json": {
+                schema: {
+                    type: "object",
+                    properties: {
+                        count: { type: "number", example: 1},
+                        saveToDatabase: { type: "boolean", example: true}
+                    }
+                }
+            }
+        }
     }
 }

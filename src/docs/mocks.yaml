@@ -1,0 +1,60 @@
+paths:
+  /api/mocks/deliveries:
+    get:
+      tags:
+        - Mocks
+      summary: Get delivery mocks
+      parameters:
+        - $ref: "#/components/Parameters/CountQueryParam"
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/MockingDeliveriesResponse"
+    post:
+      tags:
+        - Mocks
+      summary: Get delivery mocks and save to database
+      requestBody:
+        $ref: "#/components/RequestBodies/SaveToDbAndCountRequest"
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/GenerateDeliveriesResponse"
+
+  /api/mocks/orders:
+    get:
+      tags:
+        - Mocks
+      summary: Get order mocks
+      parameters:
+        - $ref: "#/components/Parameters/CountQueryParam"
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/MockingOrdersResponse"
+    post:
+      tags:
+        - Mocks
+      summary: Get order mocks and save to database
+      requestBody:
+        $ref: "#/components/RequestBodies/SaveToDbAndCountRequest"
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/GenerateOrdersResponse"
+
+  /api/mocks/users:
+    get:
+      tags:
+        - Mocks
+      summary: Get user mocks
+      parameters:
+        - $ref: "#/components/Parameters/CountQueryParam"
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/MockingUsersResponse"
+    post:
+      tags:
+        - Mocks
+      summary: Get user mocks and save to database
+      requestBody:
+        $ref: "#/components/RequestBodies/SaveToDbAndCountRequest"
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/GenerateUsersResponse"
