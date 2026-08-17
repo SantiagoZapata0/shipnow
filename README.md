@@ -1,218 +1,166 @@
 # ShipNow API
 
-## Descripción
+API REST para administrar la operación de una logística de distribución: usuarios, productos, pedidos y entregas. También incluye generación de datos de prueba y documentación interactiva con Swagger.
 
-ShipNow es una API REST para la gestión de una logística de distribución de productos. Permite administrar usuarios (con roles diferenciados), productos (con control de stock y estado), pedidos y entregas, sobre una arquitectura profesional por capas. Incluye además un módulo de mocking para generar datos de prueba sin cargarlos a mano.
+## Funcionalidades
 
-## Tecnologías utilizadas
+- CRUD de usuarios, productos, pedidos y entregas.
+- Gestión de roles, estados y prioridades mediante constantes centralizadas.
+- Cálculo del total de un pedido a partir de los productos y cantidades recibidos.
+- Validación de referencias entre entidades: un pedido requiere un usuario y productos existentes; una entrega requiere un pedido existente y, si se asigna, un usuario con rol `courier`.
+- Módulo de mocks para usuarios, pedidos y entregas, con opción de persistirlos en MongoDB fuera de producción.
+- Manejo centralizado de errores y logging con rotación diaria de archivos.
+- Documentación OpenAPI disponible desde Swagger UI.
 
-- **Node.js** + **Express** — servidor y ruteo HTTP
-- **MongoDB** (Atlas) + **Mongoose** — base de datos y modelado
-- **dotenv** — manejo de variables de entorno
-- **@faker-js/faker** — generación de datos de prueba (mocking)
-- **Winston** + **winston-daily-rotate-file** — logging centralizado y rotación de archivos de errores
-- **ESM** (ECMAScript Modules) — sistema de importación
+## Tecnologías
 
-## Instalación y ejecución local
+- Node.js con Express 5 y ECMAScript Modules.
+- MongoDB con Mongoose.
+- Swagger (`swagger-jsdoc` y `swagger-ui-express`).
+- Winston y `winston-daily-rotate-file` para logs.
+- Faker para la generación de datos de prueba.
+- pnpm como gestor de dependencias.
 
-### Requisitos previos
+## Requisitos e instalación
 
-- Node.js instalado (v18 o superior recomendado)
-- pnpm como gestor de paquetes
-- Una base de datos MongoDB Atlas activa (o local, adaptando la URI)
+Se necesita una instancia de MongoDB accesible mediante URI (Atlas o local), Node.js y pnpm.
 
-### Pasos
-
-1. Clonar el repositorio:
-   ```bash
-   git clone <url-del-repositorio>
-   cd shipnow
-   ```
-
-2. Instalar dependencias:
-   ```bash
-   pnpm install
-   ```
-
-3. Configurar las variables de entorno: crear un archivo `.env` en la raíz del proyecto siguiendo el formato de `.env.example` (ver sección siguiente).
-
-4. Levantar el servidor en modo desarrollo:
-   ```bash
-   pnpm run dev
-   ```
-
-5. Verificar que el servidor esté activo entrando a:
-   ```
-   GET http://localhost:<PORT>/api/health
-   ```
-
-## Variables de entorno
-
-El archivo `.env` debe incluir las siguientes variables (ver `.env.example`):
-
-| Variable      | Descripción                                              |
-|---------------|-----------------------------------------------------------|
-| `PORT`        | Puerto en el que se levanta el servidor                  |
-| `MONGO_KEY`   | URI de conexión a la base de datos MongoDB Atlas          |
-| `NODE_ENV`    | Entorno de ejecución (`development` / `production`). Determina, entre otras cosas, si el módulo de mocking queda disponible (ver sección Mocking). |
-| `JWT_SECRET`  | Clave secreta para la firma de tokens JWT (autenticación, pendiente de implementar) |
-
-Si alguna de estas variables falta al arrancar la aplicación, el servidor **no inicia** y lanza un error descriptivo indicando cuál falta.
-
-## Arquitectura del proyecto
-
-El proyecto sigue una arquitectura de **3 capas**: **Controller → Service → Repository**. El Router y el Model son piezas de soporte que complementan esa arquitectura (el Router dirige las peticiones HTTP hacia el Controller correspondiente; el Model define la estructura de datos que el Repository consulta), pero no se cuentan como una capa adicional — son requisitos para que las 3 capas centrales funcionen, no una capa más.
-
-Flujo completo de una petición:
+```bash
+git clone <url-del-repositorio>
+cd ShipNow
+pnpm install
 ```
+
+Crear un archivo `.env` en la raíz a partir de `.env.example`:
+
+```env
+PORT=3000
+MONGO_KEY=mongodb+srv://<usuario>:<password>@<cluster>/<base-de-datos>
+NODE_ENV=development
+JWT_SECRET=<secreto>
+```
+
+Las cuatro variables son obligatorias: la aplicación valida su presencia antes de iniciar. Luego ejecutar:
+
+```bash
+pnpm run dev
+```
+
+El servidor queda disponible en `http://localhost:<PORT>`.
+
+## Documentación Swagger
+
+Con el servidor en ejecución, la documentación interactiva está disponible en:
+
+```text
+GET http://localhost:<PORT>/api/docs
+```
+
+La especificación se construye en `src/config/swagger.js` con OpenAPI 3.0. Allí se registra el servidor de desarrollo, las etiquetas de cada módulo y el patrón que carga los archivos `src/docs/**/*.yaml`.
+
+Los YAML definen los paths y operaciones documentadas, separados por dominio:
+
+| Archivo | Contenido |
+|---|---|
+| `health.yaml` | Estado del servidor. |
+| `logger.yaml` | Endpoint de diagnóstico del logger. |
+| `users.yaml` | Operaciones y filtros de usuarios. |
+| `products.yaml` | Operaciones de productos y catálogo disponible. |
+| `orders.yaml` | Operaciones de pedidos. |
+| `deliveries.yaml` | Operaciones de entregas. |
+| `mocks.yaml` | Generación y persistencia de datos de prueba. |
+
+Para evitar repetir definiciones, los YAML usan referencias a los grupos declarados en `src/docs/components/`:
+
+| Archivo | Grupo de componentes | Qué almacena |
+|---|---|---|
+| `schemas.js` | `GoodRqSchemas`, `BadRqSchemas` | Estructuras y ejemplos de cuerpos de respuesta exitosos y de error. |
+| `responses.js` | `GoodResponses`, `BadResponses` | Respuestas HTTP reutilizables para los distintos endpoints, incluidas las respuestas de error. |
+| `requestBodies.js` | `RequestBodies` | Cuerpos JSON reutilizables para crear o actualizar recursos y para generar mocks. |
+| `parameters.js` | `Parameters` | Parámetros de ruta (`uid`, `pid`, `oid`, `did`) y de consulta (`role`, `email`, `count`). |
+
+Por ejemplo, un YAML referencia un recurso compartido con `$ref: "#/components/<grupo>/<componente>"`. Al agregar un endpoint, se debe documentar su path en el YAML del dominio y reutilizar —o incorporar— el componente correspondiente para sus parámetros, cuerpo y respuestas.
+
+## Arquitectura
+
+La aplicación separa responsabilidades en tres capas:
+
+```text
 Router → Controller → Service → Repository → Model (Mongoose)
 ```
 
-```
+- **Router:** asocia métodos y paths HTTP con controllers.
+- **Controller:** recibe la petición, delega en el servicio y envía la respuesta HTTP.
+- **Service:** concentra reglas de negocio y validaciones del dominio.
+- **Repository:** encapsula el acceso a Mongoose/MongoDB.
+- **Model:** define los esquemas y restricciones de persistencia.
+
+Estructura principal:
+
+```text
 src/
-├── config/            # Variables de entorno y configuración centralizada del logger
-├── constants/         # Valores inmutables del dominio (roles, estados, prioridades)
-├── errors/            # Códigos de error y clase CustomError
-├── middlewares/       # Manejo centralizado de errores y rutas inexistentes
-├── models/            # Definición de esquemas de Mongoose (Product, User, Order, Delivery)
-├── repositories/      # Único punto de acceso a Mongoose/MongoDB (1 de las 3 capas)
-├── services/          # Lógica de negocio (1 de las 3 capas)
-├── controllers/       # Manejo de req/res (1 de las 3 capas)
-├── routes/            # Definición de endpoints
-├── mocks/             # Módulo de mocking (repositories, services, controllers, routes propios)
-├── test/              # Reservado para tests automatizados (pendiente de implementar)
-└── app.js / server.js
+├── config/        # Entorno, base de datos, Swagger y logger
+├── constants/     # Roles, estados y prioridades del dominio
+├── controllers/   # Adaptadores HTTP
+├── docs/          # Paths YAML y componentes reutilizables de Swagger
+├── errors/        # CustomError y catálogo de códigos
+├── middlewares/   # Rutas inexistentes y manejo global de errores
+├── mocks/         # Router, controller, service y repository de datos de prueba
+├── models/        # Esquemas de Mongoose
+├── repositories/  # Acceso a datos
+├── routes/        # Definición de endpoints
+└── services/      # Lógica de negocio
 ```
 
-- **Router**: conecta cada path y método HTTP con su Controller correspondiente. No contiene lógica.
-- **Controller**: única puerta de entrada HTTP. Recibe `req`, llama al Service, devuelve la respuesta con el status code correspondiente. No conoce Mongoose ni reglas de negocio.
-- **Service**: contiene toda la lógica de negocio (validaciones, filtros según rol, cálculos, armado de respuestas). Es el único que decide *qué* datos pedir y *por qué*.
-- **Repository**: único lugar que conoce Mongoose. Expone métodos de acceso a datos (búsqueda, creación, actualización, borrado), sin decidir reglas de negocio.
-- **Model**: define exclusivamente el esquema de cada entidad (estructura, tipos, validaciones de formato, referencias).
+## Dominio y reglas principales
 
-El módulo de **mocking** replica esta misma separación en su propia carpeta (`mocks/`), con Repository, Service, Controller y Router propios, para no mezclar datos de prueba con la lógica real de producción.
+| Entidad | Descripción |
+|---|---|
+| `User` | Tiene nombre, apellido, email único, contraseña y rol: `user`, `admin` o `courier`. |
+| `Product` | Tiene código único, precio, stock, categoría, imágenes y estado: `draft`, `available`, `out_of_stock`, `arriving_soon` o `discontinued`. |
+| `Order` | Pertenece a un usuario y contiene uno o más productos con cantidad. El total se calcula en el servicio. Sus estados son `pending`, `payment_validated`, `packaged`, `dispatched` y `cancelled`; sus prioridades son `low`, `medium` y `high`. |
+| `Delivery` | Se asocia a un pedido y opcionalmente a un repartidor. Sus estados son `pending`, `on_the_way`, `delivered` y `not_delivered`. La fecha estimada final debe ser posterior a la inicial. |
 
-## Decisión de diseño: Service vs Repository
+## Endpoints
 
-Se optó por separar estrictamente la lógica de negocio (Service) del acceso a datos (Repository) para que cada capa tenga una única responsabilidad y el código sea más fácil de mantener y testear.
+La especificación de Swagger es la referencia para cuerpos, ejemplos y respuestas por operación. Este es el mapa de rutas implementadas:
 
-El **Repository** se mantiene deliberadamente "tonto": solo sabe consultar o modificar la base de datos a partir de los parámetros que recibe (por ejemplo, `findAllProducts(filters)` recibe un objeto de filtros ya armado y lo pasa a Mongoose tal cual). No decide *qué* filtrar ni *por qué* — eso es responsabilidad de negocio.
+| Recurso | Operaciones |
+|---|---|
+| Salud | `GET /api/health` |
+| Logger | `GET /logger-test` |
+| Usuarios | `GET`, `POST /api/users`; `GET /api/users/role?role=<rol>`; `GET /api/users/email?email=<email>`; `GET`, `PUT`, `DELETE /api/users/:uid` |
+| Productos | `GET`, `POST /api/products`; `GET /api/products/available`; `GET`, `PUT`, `DELETE /api/products/:pid` |
+| Pedidos | `GET`, `POST /api/orders`; `GET`, `PUT`, `DELETE /api/orders/:oid` |
+| Entregas | `GET`, `POST /api/deliveries`; `GET`, `PUT`, `DELETE /api/deliveries/:did` |
+| Mocks* | `GET`, `POST /api/mocks/users`; `GET`, `POST /api/mocks/orders`; `GET`, `POST /api/mocks/deliveries` |
 
-El **Service**, en cambio, es quien conoce las reglas del dominio. Un ejemplo concreto es el listado de productos: un usuario común solo debe ver productos con estado `AVAILABLE` y stock mayor a cero, mientras que un administrador necesita ver el catálogo completo (incluyendo borradores, sin stock o discontinuados) para poder gestionarlos. Esta decisión depende del contexto de la petición, por lo que corresponde al Service (`getAvailableProducts()` y `getAllProducts()`), no al Repository.
+\* Las rutas de mocks solo se montan cuando `NODE_ENV` es distinto de `production`.
 
-Esta separación también evita que el Repository se convierta en un "pasamanos" (un simple `return Model.find()` sin agregar valor), y facilita que si cambia una regla de negocio, el cambio se haga en un solo lugar sin tocar la capa de acceso a datos.
+## Mocks
 
-El mismo criterio se aplicó en el módulo de mocking: la **generación** de datos falsos con Faker vive en el Service (no requiere Mongoose), mientras que el **guardado masivo** en la base (`insertMany`) vive en un Repository propio del módulo de mocks, para no mezclar operaciones de prueba con los Repository de producción.
+Los endpoints `GET /api/mocks/<recurso>?count=N` generan datos sin persistirlos. Si `count` no se envía, se generan 100 elementos; el valor se convierte a entero y debe quedar entre 1 y 100.
 
-## Entidades del dominio
+Los endpoints `POST /api/mocks/<recurso>` aceptan:
 
-| Entidad    | Descripción                                                                 |
-|------------|-------------------------------------------------------------------------------|
-| `Product`  | Productos del catálogo. Estados: `DRAFT`, `AVAILABLE`, `OUT_OF_STOCK`, `ARRIVING_SOON`, `DISCONTINUED`. |
-| `User`     | Usuarios del sistema. Roles: `USER`, `ADMIN`, `COURIER` (repartidor).       |
-| `Order`    | Pedidos realizados por un usuario. Contiene un array de ítems (producto + cantidad) y un total calculado. Estados: `PENDING`, `PAYMENT_VALIDATED`, `PACKAGED`, `DISPATCHED`, `CANCELLED`. Prioridades: `LOW`, `MEDIUM`, `HIGH`. |
-| `Delivery` | Entrega física asociada a un pedido, y opcionalmente a un repartidor (`User` con rol `COURIER`) una vez asignado. Estados: `PENDING`, `ON_THE_WAY`, `DELIVERED`, `NOT_DELIVERED`. |
-
-Todas las constantes de roles, estados y prioridades están centralizadas en `src/constants/constants.js` y definidas con `Object.freeze`, evitando strings sueltos en el resto del código.
-
-## Endpoints principales
-
-### Products
-
-| Método | Endpoint                   | Descripción                                  |
-|--------|------------------------------|-----------------------------------------------|
-| GET    | `/api/products`              | Lista todos los productos (admin)             |
-| GET    | `/api/products/available`    | Lista productos disponibles (usuario)         |
-| GET    | `/api/products/:pid`         | Obtiene un producto por ID                    |
-| POST   | `/api/products`               | Crea un nuevo producto                        |
-| PUT    | `/api/products/:pid`          | Actualiza un producto existente               |
-| DELETE | `/api/products/:pid`          | Elimina un producto                           |
-
-### Users
-
-| Método | Endpoint                    | Descripción                                |
-|--------|-------------------------------|----------------------------------------------|
-| GET    | `/api/users`                  | Lista todos los usuarios                     |
-| GET    | `/api/users/role?role=`       | Lista usuarios filtrados por rol (query param) |
-| GET    | `/api/users/email?email=`     | Busca un usuario por email (query param)     |
-| GET    | `/api/users/:uid`             | Obtiene un usuario por ID                    |
-| POST   | `/api/users`                   | Crea un nuevo usuario                        |
-| PUT    | `/api/users/:uid`              | Actualiza un usuario existente               |
-| DELETE | `/api/users/:uid`              | Elimina un usuario                           |
-
-### Health check
-
-| Método | Endpoint       | Descripción                     |
-|--------|-----------------|-----------------------------------|
-| GET    | `/api/health`   | Verifica que el servidor esté activo |
-
-## Mocking y carga de datos de prueba
-
-El módulo de mocking permite generar datos simulados de **Usuarios** (incluyendo repartidores, vía rol `COURIER`), **Pedidos** y **Entregas**, sin necesidad de cargarlos a mano. Cada entidad expone dos endpoints bajo el prefijo común `/api/mocks`:
-
-- **`GET`**: genera los datos y los devuelve en la respuesta, **sin guardarlos** en la base.
-- **`POST`**: genera los datos y, si se indica, los **guarda** en MongoDB.
-
-> ⚠️ El módulo de mocking solo está disponible cuando `NODE_ENV` **no** es `production` (se monta condicionalmente en `app.js`).
-
-### Endpoints de mocking
-
-| Método | Endpoint             | Descripción                                                  |
-|--------|------------------------|-----------------------------------------------------------------|
-| GET    | `/api/mocks/users?count=N`      | Genera `N` usuarios falsos (roles válidos) sin guardarlos     |
-| POST   | `/api/mocks/users`               | Genera usuarios falsos y los guarda si `saveToDatabase: true` |
-| GET    | `/api/mocks/orders?count=N`      | Genera `N` pedidos falsos sin guardarlos                       |
-| POST   | `/api/mocks/orders`              | Genera pedidos falsos y los guarda si `saveToDatabase: true`  |
-| GET    | `/api/mocks/deliveries?count=N`  | Genera `N` entregas falsas sin guardarlas                      |
-| POST   | `/api/mocks/deliveries`          | Genera entregas falsas y las guarda si `saveToDatabase: true` |
-
-Body esperado en los endpoints `POST`:
 ```json
 {
   "count": 10,
   "saveToDatabase": true
 }
 ```
-Si `saveToDatabase` se omite o es `false`, los datos se generan y se devuelven en la respuesta, pero no se persisten.
 
-### Qué datos genera cada mock
+Con `saveToDatabase: true`, los datos se insertan en MongoDB y la respuesta es `201`. Si es `false` o se omite, se generan pero no se guardan y se responde `200`.
 
-- **Usuarios**: nombre, apellido, email y contraseña con Faker; rol elegido al azar entre `USER_ROLES` (`USER`, `ADMIN`, `COURIER`).
-- **Pedidos**: requieren usuarios y productos **ya existentes** en la base (los referencia por `_id`, no inventa nuevos). Cada pedido tiene entre 1 y 5 ítems con cantidades aleatorias, `total` calculado a partir del precio real de cada producto, y `status`/`priority` elegidos entre las constantes correspondientes.
-- **Entregas**: requieren pedidos **ya existentes**. El repartidor (`courier`) se asigna aproximadamente en el 50% de los casos (simulando entregas aún sin asignar); las fechas `estimatedFrom` y `estimatedTo` representan una ventana de entrega de 7 días.
+- Los mocks de usuarios generan roles válidos al azar.
+- Los de pedidos requieren usuarios y productos ya existentes.
+- Los de entregas requieren pedidos existentes; solo asignan repartidor si hay usuarios con rol `courier`.
 
-### Orden recomendado para probar
+Para persistir datos relacionados, el orden recomendado es: usuarios, productos, pedidos y finalmente entregas.
 
-Como Pedidos y Entregas referencian datos reales, conviene generarlos en este orden:
+## Errores y logging
 
-1. Cargar o generar **usuarios** (`POST /api/mocks/users` con `saveToDatabase: true`).
-2. Cargar **productos** reales manualmente (`POST /api/products`), ya que no forman parte del módulo de mocking.
-3. Generar **pedidos** (`POST /api/mocks/orders` con `saveToDatabase: true`), que van a referenciar los usuarios y productos ya existentes.
-4. Generar **entregas** (`POST /api/mocks/deliveries` con `saveToDatabase: true`), que van a referenciar los pedidos ya existentes y, si hay, a los usuarios con rol `COURIER`.
-
-## Manejo profesional de errores
-
-Todos los errores del proyecto se resuelven en una **capa centralizada** y quedan registrados mediante el logger, en vez de responderse o registrarse de forma aislada en cada ruta o Controller.
-
-### Cómo funciona
-
-- **`CustomError`** (`src/errors/custom-error.js`): clase que extiende `Error`. Se instancia con un código de error (key del diccionario) y, opcionalmente, un mensaje específico:
-  ```js
-  throw new CustomError("NOT_FOUND", "Producto no encontrado.");
-  throw new CustomError("BAD_REQUEST"); // usa el mensaje default del diccionario
-  ```
-- **Diccionario de errores** (`ERROR_CODES`): objeto centralizado (`Object.freeze`) que mapea cada código a un `statusCode` HTTP y un mensaje por defecto. Evita status codes y mensajes repetidos o inconsistentes en distintos archivos.
-- **Middleware global de errores** (`src/middlewares/handle-error.middleware.js`): último `app.use(...)` de `app.js`. Es el único lugar del proyecto que arma la respuesta HTTP de error:
-  - Si el error es una instancia de `CustomError`, lo registra con nivel `warn` y responde con su `statusCode`, código y mensaje.
-  - Si es un error externo no controlado (por ejemplo, un `CastError` o `ValidationError` de Mongoose, un `code: 11000` de duplicado de MongoDB, o un error de conexión a la base), un mapper interno lo traduce primero a un `CustomError` equivalente antes de responder.
-  - Los errores inesperados se registran con nivel `error`. Cualquier error no reconocido cae en `INTERNAL_SERVER_ERROR` (`500`), sin exponer detalles internos al cliente.
-- **`notFoundHandler`**: middleware montado justo antes del error handler, que captura cualquier petición a una ruta inexistente y la convierte en un `CustomError` de tipo `NOT_FOUND` (`404`).
-
-Los Services y Controllers **nunca** arman una respuesta de error directamente: los Services lanzan (`throw`) el error correspondiente apenas detectan un problema, y los Controllers solo hacen `next(err)` en su `catch`, delegando toda la respuesta al middleware centralizado.
-
-### Estructura de la respuesta de error
-
-Todas las respuestas de error siguen el mismo formato, sin importar su origen:
+Los controllers delegan los errores en un middleware centralizado. `CustomError` y `ERROR_CODES` definen códigos como `NOT_FOUND`, `INVALID_ID`, `BAD_REQUEST`, `VALIDATION_ERROR`, `DUPLICATE_KEY`, `INVALID_MOCK_COUNT` y `MOCK_DATA_NOT_FOUND`. Los errores de Mongoose y de conexión también se convierten a una respuesta segura y uniforme:
 
 ```json
 {
@@ -222,76 +170,10 @@ Todas las respuestas de error siguen el mismo formato, sin importar su origen:
 }
 ```
 
-| Campo     | Descripción                                                        |
-|-----------|------------------------------------------------------------------------|
-| `status`  | Siempre `"Error"`, para distinguir a simple vista una respuesta fallida |
-| `error`   | Código del error (key del diccionario `ERROR_CODES`)                    |
-| `message` | Mensaje descriptivo del problema                                        |
+Winston registra en consola y guarda errores en `logs/error.log`; además crea archivos diarios `logs/error-YYYY-MM-DD.log` y conserva los últimos 14 días. El nivel mínimo es `debug` en desarrollo e `info` en producción. `GET /logger-test` emite un mensaje en cada nivel configurado.
 
-El `statusCode` HTTP de la respuesta corresponde al definido en `ERROR_CODES` para ese código de error.
+## Estado actual y consideraciones de seguridad
 
-Así, la respuesta incluye información útil y segura para quien consume la API (`error` y `message`), mientras que el detalle técnico del incidente queda centralizado en los logs y no se expone al cliente.
+La autenticación con JWT y la autorización por rol aún no están implementadas, aunque `JWT_SECRET` ya es una variable requerida. En particular, `GET /api/users/email` actualmente devuelve la contraseña almacenada y no está protegido. No se debe exponer esta API en producción hasta implementar autenticación, autorización y hasheo de contraseñas.
 
-## Logging centralizado
-
-El logger se configura una sola vez en `src/config/logger.js` y se reutiliza en toda la aplicación. Esto unifica el formato, los niveles y el destino de los registros.
-
-### Niveles de log
-
-| Nivel | Uso en la aplicación |
-|-------|-----------------------|
-| `fatal` | Fallas críticas, como un error al conectar con MongoDB. |
-| `error` | Errores inesperados capturados por el middleware global. |
-| `warn` | Errores controlados (`CustomError`) y situaciones que requieren atención. |
-| `info` | Inicio del servidor, health check y operaciones exitosas de controllers y mocks. |
-| `http` | Método de cada solicitud HTTP entrante. |
-| `debug` | Información de diagnóstico disponible fuera de producción. |
-
-El nivel mínimo es `debug` en desarrollo y `info` en producción; por lo tanto, los mensajes `debug` no se muestran en producción.
-
-### Destinos y formato
-
-- **Consola:** muestra todos los niveles habilitados con fecha, hora y colores para facilitar el seguimiento durante el desarrollo.
-- **`logs/error.log`:** conserva los mensajes de nivel `error` o superior en formato JSON.
-- **`logs/error-YYYY-MM-DD.log`:** genera archivos diarios con los errores en formato JSON y conserva los últimos 14 días.
-
-La carpeta `logs/` se encuentra excluida del control de versiones para evitar versionar registros locales.
-
-Además de los eventos de inicio, base de datos y operaciones exitosas, `app.js` registra cada solicitud entrante y el middleware global registra todos los errores, tanto customizados como inesperados. Esto permite correlacionar la respuesta entregada al usuario con el evento operativo sin duplicar la lógica de logging en cada punto de la aplicación.
-
-### Endpoint de verificación del logger
-
-Para comprobar visualmente los niveles configurados durante el desarrollo, está disponible:
-
-| Método | Endpoint | Resultado |
-|--------|----------|-----------|
-| GET | `/logger-test` | Emite un registro de cada nivel (`debug`, `http`, `info`, `warn`, `error` y `fatal`) y responde `200 OK`. |
-
-Este endpoint es de diagnóstico; no modifica datos de la aplicación.
-
-### Cómo probar el comportamiento ante casos inválidos
-
-| Caso a probar                          | Cómo probarlo                                              | Resultado esperado                          |
-|-----------------------------------------|--------------------------------------------------------------|------------------------------------------------|
-| ID con formato inválido                 | `GET /api/products/abc123`                                    | `400 INVALID_ID`                                |
-| Recurso inexistente (ID válido)         | `GET /api/products/000000000000000000000000`                  | `404 NOT_FOUND`                                 |
-| Campos obligatorios faltantes           | `POST /api/products` sin `title`/`code`/etc.                  | `400 BAD_REQUEST`                               |
-| Precio inválido                         | `POST /api/products` con `price: -10` o `price: 0`             | `400 BAD_REQUEST`                               |
-| Estado de producto inválido             | `POST /api/products` con `status: "banana"`                    | `400 VALIDATION_ERROR`                          |
-| Rol de usuario inválido                 | `GET /api/users/role?role=banana`                              | `400 VALIDATION_ERROR`                          |
-| Clave duplicada (`code`/`email`)        | Crear dos veces el mismo `code` de producto o `email` de usuario | `409 DUPLICATE_KEY`                             |
-| Ruta inexistente                        | `GET /api/no-existe`                                            | `404 NOT_FOUND` (vía `notFoundHandler`)         |
-| Cantidad de mocks inválida              | `GET /api/mocks/orders?count=-5` o `?count=200`                 | `400 INVALID_MOCK_COUNT`                        |
-| Sin datos base para generar mocks       | `GET /api/mocks/orders?count=5` sin usuarios/productos cargados | `404 MOCK_DATA_NOT_FOUND`                       |
-
-### Validaciones específicas del módulo de mocks
-
-- **Cantidad inválida**: `count` debe ser un número entero entre 1 y 100. Valores negativos, cero, no numéricos o fuera de rango se rechazan con `INVALID_MOCK_COUNT`. Los decimales se truncan al entero (`2.5` → `2`) antes de validar.
-- **Datos base insuficientes**: generar pedidos requiere usuarios y productos ya existentes en la base; generar entregas requiere pedidos ya existentes (el repartidor es opcional). Si falta lo obligatorio, se responde `MOCK_DATA_NOT_FOUND`.
-- **Fallas durante la carga en MongoDB**: cualquier error al insertar los mocks generados (`insertMany`) se propaga desde el Repository hacia el Controller sin necesidad de `try/catch` adicionales en el Service, y termina siendo traducido por el middleware global (por ejemplo, a `VALIDATION_ERROR` o `DATABASE_CONNECTION_ERROR` según el caso).
-
-## Pendientes conocidos
-
-- Autenticación con JWT y middleware de autorización por rol (por ejemplo, para restringir el acceso a datos sensibles como `GET /api/users/email`).
-- Hasheo de contraseñas con `bcrypt` antes de guardar usuarios.
-- El catálogo de errores ya incluye los códigos `UNAUTHORIZED`/`FORBIDDEN`, preparados para cuando se implemente autenticación.
+No hay una suite de pruebas automatizadas configurada todavía; el script `pnpm test` es un placeholder.
