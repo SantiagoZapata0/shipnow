@@ -6,7 +6,7 @@ import { env } from "./env.js";
 
 import { GoodResponses, BadResponses } from "../docs/components/responses.js";
 import { RequestBodies } from "../docs/components/requestBodies.js";
-import Schemas from "../docs/components/schemas.js";
+import { BadRqSchemas, GoodRqSchemas } from "../docs/components/schemas.js";
 import Parameters from "../docs/components/parameters.js";
 
 const swaggerSpecs = swaggerJSDoc({
@@ -33,7 +33,7 @@ const swaggerSpecs = swaggerJSDoc({
             {name: "Mocks", description: "Endpoints for managing mocks"}
         ],
         components: {
-            Schemas, GoodResponses, BadResponses, Parameters, RequestBodies
+            GoodRqSchemas, BadRqSchemas, GoodResponses, BadResponses, Parameters, RequestBodies
         }
     },
     apis: ["./src/docs/**/*.yaml"]

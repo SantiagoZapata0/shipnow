@@ -15,7 +15,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/HealthStatus"
+                    $ref: "#/components/GoodRqSchemas/HealthStatus"
                 }
             }
         }
@@ -34,7 +34,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/LoggerStatus"
+                    $ref: "#/components/GoodRqSchemas/LoggerStatus"
                 }
             }
         }
@@ -47,7 +47,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/GetAllUsersStatus"
+                    $ref: "#/components/GoodRqSchemas/GetAllUsersStatus"
                 }
             }
         }
@@ -57,7 +57,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/GetUserByIdStatus"
+                    $ref: "#/components/GoodRqSchemas/GetUserByIdStatus"
                 }
             }
         }
@@ -67,7 +67,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/GetUserByRoleStatus"
+                    $ref: "#/components/GoodRqSchemas/GetUserByRoleStatus"
                 }
             }
         }
@@ -77,7 +77,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/GetUserByEmailStatus"
+                    $ref: "#/components/GoodRqSchemas/GetUserByEmailStatus"
                 }
             }
         }
@@ -87,7 +87,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/CreateUserStatus"
+                    $ref: "#/components/GoodRqSchemas/CreateUserStatus"
                 }
             }
         }
@@ -97,7 +97,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/UpdateUserStatus"
+                    $ref: "#/components/GoodRqSchemas/UpdateUserStatus"
                 }
             }
         }
@@ -107,7 +107,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/DeletedUserStatus"
+                    $ref: "#/components/GoodRqSchemas/DeletedUserStatus"
                 }
             }
         }
@@ -120,7 +120,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/GetAllProductsStatus"
+                    $ref: "#/components/GoodRqSchemas/GetAllProductsStatus"
                 }
             }
         }
@@ -130,7 +130,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/GetProductByIdStatus"
+                    $ref: "#/components/GoodRqSchemas/GetProductByIdStatus"
                 }
             }
         }
@@ -140,7 +140,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/CreateProductStatus"
+                    $ref: "#/components/GoodRqSchemas/CreateProductStatus"
                 }
             }
         }
@@ -150,7 +150,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/UpdateProductStatus"
+                    $ref: "#/components/GoodRqSchemas/UpdateProductStatus"
                 }
             }
         }
@@ -160,7 +160,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/DeleteProductStatus"
+                    $ref: "#/components/GoodRqSchemas/DeleteProductStatus"
                 }
             }
         }
@@ -170,7 +170,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/GetAvailableProductsStatus"
+                    $ref: "#/components/GoodRqSchemas/GetAvailableProductsStatus"
                 }
             }
         }
@@ -183,7 +183,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/GetAllOrdersStatus"
+                    $ref: "#/components/GoodRqSchemas/GetAllOrdersStatus"
                 }
             }
         }
@@ -194,7 +194,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/GetOrderByIdStatus"
+                    $ref: "#/components/GoodRqSchemas/GetOrderByIdStatus"
                 }
             }
         }
@@ -205,7 +205,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/CreateOrderStatus"
+                    $ref: "#/components/GoodRqSchemas/CreateOrderStatus"
                 }
             }
         }
@@ -217,7 +217,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/UpdateOrderStatus"
+                    $ref: "#/components/GoodRqSchemas/UpdateOrderStatus"
                 }
             }
         }
@@ -228,7 +228,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/DeleteOrderStatus"
+                    $ref: "#/components/GoodRqSchemas/DeleteOrderStatus"
                 }
             }
         }
@@ -241,7 +241,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/GetAllDeliveriesStatus"
+                    $ref: "#/components/GoodRqSchemas/GetAllDeliveriesStatus"
                 }
             }
         }
@@ -251,7 +251,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/GetDeliveryByIdStatus"
+                    $ref: "#/components/GoodRqSchemas/GetDeliveryByIdStatus"
                 }
             }
         }
@@ -261,7 +261,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/CreateDeliveryStatus"
+                    $ref: "#/components/GoodRqSchemas/CreateDeliveryStatus"
                 }
             }
         }
@@ -271,7 +271,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/UpdateDeliveryStatus"
+                    $ref: "#/components/GoodRqSchemas/UpdateDeliveryStatus"
                 }
             }
         }
@@ -281,7 +281,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/DeleteDeliveryStatus"
+                    $ref: "#/components/GoodRqSchemas/DeleteDeliveryStatus"
                 }
             }
         }
@@ -294,7 +294,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/MockingDeliveriesStatus"
+                    $ref: "#/components/GoodRqSchemas/MockingDeliveriesStatus"
                 }
             }
         }
@@ -305,7 +305,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/GenerateDeliveriesStatus"
+                    $ref: "#/components/GoodRqSchemas/GenerateDeliveriesStatus"
                 }
             }
         }
@@ -316,7 +316,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/MockingOrdersStatus"
+                    $ref: "#/components/GoodRqSchemas/MockingOrdersStatus"
                 }
             }
         }
@@ -327,7 +327,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/GenerateOrdersStatus"
+                    $ref: "#/components/GoodRqSchemas/GenerateOrdersStatus"
                 }
             }
         }
@@ -338,7 +338,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/MockingUsersStatus"
+                    $ref: "#/components/GoodRqSchemas/MockingUsersStatus"
                 }
             }
         }
@@ -349,7 +349,7 @@ export const GoodResponses = {
         content: {
             "application/json": {
                 schema: {
-                    $ref: "#/components/Schemas/GenerateUsersStatus"
+                    $ref: "#/components/GoodRqSchemas/GenerateUsersStatus"
                 }
             }
         }
@@ -358,5 +358,124 @@ export const GoodResponses = {
 }
 
 export const BadResponses = {
-
+    NotFoundResponse: {
+        description: "Response when a resource is not found",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/BadRqSchemas/NotFoundStatus"
+                }
+            }
+        }
+    },
+    InvalidIdResponse: {
+        description: "Response when an ID search contains an invalid ID",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/BadRqSchemas/InvalidIdStatus"
+                }
+            }
+        }
+    },
+    DuplicateKeyResponse: {
+        description: "Response when creating a resource with a duplicate value",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/BadRqSchemas/DuplicateKeyStatus"
+                }
+            }
+        }
+    },
+    BadRequestResponse: {
+        description: "Response for a malformed request",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/BadRqSchemas/BadRequestStatus"
+                }
+            }
+        }
+    },
+    ValidationErrorResponse: {
+        description: "Response when data contains invalid formats or violates validation rules.",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/BadRqSchemas/ValidationErrorStatus"
+                }
+            }
+        }
+    },
+    UnauthorizedResponse: {
+        description: "Response when the system does not know who you are and cannot assign permissions to you.",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/BadRqSchemas/UnauthorizedStatus"
+                }
+            }
+        }
+    },
+    ForbiddenResponse: {
+        description: "Response when the system grants and revokes certain permissions based on your role.",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/BadRqSchemas/ForbiddenStatus"
+                }
+            }
+        }
+    },
+    ConflictResponse: {
+        description: "Response when the request conflicts with the current state of the server or the resource.",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/BadRqSchemas/ConflictStatus"
+                }
+            }
+        }
+    },
+    DatabaseConnectionErrorResponse: {
+        description: "Response when a database connection error occurs",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/BadRqSchemas/DatabaseConnectionErrorStatus"
+                }
+            }
+        }
+    },
+    InvalidMockCountResponse: {
+        description: "Response when the requested number of mocks is invalid",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/BadRqSchemas/InvalidMockCountStatus"
+                }
+            }
+        }
+    },
+    MockDataNotFoundResponse: {
+        description: "Response when mocks cannot find the data required for mock generation within the database.",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/BadRqSchemas/MockDataNotFoundStatus"
+                }
+            }
+        }
+    },
+    InternalServerErrorResponse: {
+        description: "Response when an unexpected error or an internal server error occurs",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/BadRqSchemas/InternalServerErrorStatus"
+                }
+            }
+        }
+    }
 }

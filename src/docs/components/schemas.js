@@ -1,4 +1,4 @@
-const Schemas = {
+export const GoodRqSchemas = {
 
     //* Health status
 
@@ -735,4 +735,112 @@ const Schemas = {
     }
 }
 
-export default Schemas;
+export const BadRqSchemas = {
+    NotFoundStatus: {
+        type: "object",
+        properties: {
+           status: { type: "string", example: "Error"},
+           error: { type: "string", example: "NOT_FOUND"},
+           message: { type: "string", example: "Resource not found"} 
+        }
+    },
+
+    InvalidIdStatus: {
+        type: "object",
+        properties: {
+           status: { type: "string", example: "Error"},
+           error: { type: "string", example: "INVALID_ID"},
+           message: { type: "string", example: "Invalid resource ID"} 
+        }
+    },
+
+    DuplicateKeyStatus: {
+        type: "object",
+        properties: {
+           status: { type: "string", example: "Error"},
+           error: { type: "string", example: "DUPLICATE_KEY"},
+           message: { type: "string", example: "Key already in use"} 
+        }
+    },
+
+    BadRequestStatus: {
+        type: "object",
+        properties: {
+           status: { type: "string", example: "Error"},
+           error: { type: "string", example: "BAD_REQUEST"},
+           message: { type: "string", example: "Malformed request"} 
+        }
+    },
+
+    ValidationErrorStatus: {
+        type: "object",
+        properties: {
+           status: { type: "string", example: "Error"},
+           error: { type: "string", example: "VALIDATION_ERROR"},
+           message: { type: "string", example: "Data contains invalid formats or violates validations rules"} 
+        }
+    },
+
+    UnauthorizedStatus: {
+        type: "object",
+        properties: {
+           status: { type: "string", example: "Error"},
+           error: { type: "string", example: "UNAUTHORIZED"},
+           message: { type: "string", example: "Unauthorized"} 
+        }
+    },
+
+    ForbiddenStatus: {
+        type: "object",
+        properties: {
+           status: { type: "string", example: "Error"},
+           error: { type: "string", example: "FORBIDDEN"},
+           message: { type: "string", example: "Forbidden"} 
+        }
+    },
+
+    ConflictStatus: {
+        type: "object",
+        properties: {
+           status: { type: "string", example: "Error"},
+           error: { type: "string", example: "CONFLICT"},
+           message: { type: "string", example: "Conflict"} 
+        }
+    },
+
+    DatabaseConnectionErrorStatus: {
+        type: "object",
+        properties: {
+           status: { type: "string", example: "Error"},
+           error: { type: "string", example: "DATABASE_CONNECTION_ERROR"},
+           message: { type: "string", example: "Database connection error"} 
+        }
+    },
+
+    InvalidMockCountStatus: {
+        type: "object",
+        properties: {
+           status: { type: "string", example: "Error"},
+           error: { type: "string", example: "INVALID_MOCK_COUNT"},
+           message: { type: "string", example: "Invalid mock count"} 
+        }
+    },
+
+    MockDataNotFoundStatus: {
+        type: "object",
+        properties: {
+           status: { type: "string", example: "Error"},
+           error: { type: "string", example: "MOCK_DATA_NOT_FOUND"},
+           message: { type: "string", example: "Mock data not found"} 
+        }
+    },
+
+    InternalServerErrorStatus: {
+        type: "object",
+        properties: {
+           status: { type: "string", example: "Error"},
+           error: { type: "string", example: "INTERNAL_SERVER_ERROR"},
+           message: { type: "string", example: "Internal server error"} 
+        }
+    }
+}
