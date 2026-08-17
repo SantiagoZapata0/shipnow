@@ -17,6 +17,12 @@ paths:
       responses:
         "201":
           $ref: "#/components/GoodResponses/CreateProductResponse"
+        "400":
+          $ref: "#/components/BadResponses/BadRequestResponse"
+        "409":
+          $ref: "#/components/BadResponses/DuplicateKeyResponse"
+        "422":
+          $ref: "#/components/BadResponses/ValidationErrorResponse"
   
   /api/products/{pid}:
     get:
@@ -28,6 +34,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/GoodResponses/GetProductByIdResponse"
+        "404":
+          $ref: "#/components/BadResponses/NotFoundResponse"
 
     put:
       tags:
@@ -40,6 +48,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/GoodResponses/UpdateProductResponse"
+        "404":
+          $ref: "#/components/BadResponses/NotFoundResponse"
 
     delete:
       tags:
@@ -50,6 +60,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/GoodResponses/DeleteProductResponse"
+        "404":
+          $ref: "#/components/BadResponses/NotFoundResponse"
 
   /api/products/available:
     get:

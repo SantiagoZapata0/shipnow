@@ -477,5 +477,15 @@ export const BadResponses = {
                 }
             }
         }
+    },
+    ServiceUnavailableResponse: {
+        description: "Response to a server health failure",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/BadRqSchemas/ServiceUnavailableStatus"
+                }
+            }
+        }
     }
 }

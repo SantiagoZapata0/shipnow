@@ -16,7 +16,7 @@ export const ERROR_CODES = Object.freeze({
         message: "Malformed request"
     },
     VALIDATION_ERROR:{
-        statusCode: 400,
+        statusCode: 422,
         message: "Data contains invalid formats or violates validations rules"
     },
     UNAUTHORIZED:{

@@ -8,4 +8,5 @@ paths:
       responses:
         "200":
           $ref: "#/components/GoodResponses/HealthResponse"
-        
+        "503":
+          $ref: "#/components/BadResponses/ServiceUnavailableResponse"

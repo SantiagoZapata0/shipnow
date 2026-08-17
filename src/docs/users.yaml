@@ -17,7 +17,11 @@ paths:
       description: Endpoint to create and return a user
       responses:
         "201":
-          $ref: "#/components/GoodResponses/CreateUserResponse" 
+          $ref: "#/components/GoodResponses/CreateUserResponse"
+        "400":
+          $ref: "#/components/BadResponses/BadRequestResponse"
+        "409":
+          $ref: "#/components/BadResponses/DuplicateKeyResponse"
 
   /api/users/role:
     get:
@@ -30,6 +34,12 @@ paths:
       responses:
         "200":
           $ref: "#/components/GoodResponses/GetUserByRoleResponse"
+        "400":
+          $ref: "#/components/BadResponses/BadRequestResponse"
+        "422":
+          $ref: "#/components/BadResponses/ValidationErrorResponse"
+        "404":
+          $ref: "#/components/BadResponses/NotFoundResponse"
 
   /api/users/email:
     get:
@@ -43,6 +53,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/GoodResponses/GetUserByEmailResponse"
+        "404":
+          $ref: "#/components/BadResponses/NotFoundResponse"
 
   /api/users/{uid}:
     get:
@@ -55,6 +67,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/GoodResponses/GetUserByIdResponse"
+        "404":
+          $ref: "#/components/BadResponses/NotFoundResponse"
 
     put:
       tags:
@@ -69,6 +83,10 @@ paths:
       responses:
         "200":
           $ref: "#/components/GoodResponses/UpdateUserResponse"
+        "400":
+          $ref: "#/components/BadResponses/BadRequestResponse"
+        "404":
+          $ref: "#/components/BadResponses/NotFoundResponse"
 
     delete:
       tags:
@@ -81,3 +99,5 @@ paths:
       responses:
         "200":
           $ref: "#/components/GoodResponses/DeletedUserResponse"
+        "404":
+          $ref: "#/components/BadResponses/NotFoundResponse"

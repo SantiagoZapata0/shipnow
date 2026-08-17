@@ -842,5 +842,14 @@ export const BadRqSchemas = {
            error: { type: "string", example: "INTERNAL_SERVER_ERROR"},
            message: { type: "string", example: "Internal server error"} 
         }
+    },
+
+    ServiceUnavailableStatus: {
+        type: "object",
+        properties: {
+            status: { type: "string", example: "Error"},
+            error: { type: "string", example: "SERVICE_UNAVAILABLE"},
+            message: { type: "string", example: "Service unavailable"}
+        }
     }
 }

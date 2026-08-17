@@ -7,3 +7,5 @@ paths:
       responses:
         "200":
           $ref: "#/components/GoodResponses/LoggerResponse"
+        "500":
+          $ref: "#/components/BadResponses/InternalServerErrorResponse"
