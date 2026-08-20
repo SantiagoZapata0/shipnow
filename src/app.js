@@ -17,6 +17,7 @@ import DeliveriesRoutes from "./routes/deliveries.routes.js";
 // ! Mock routes
 
 import UserMockRoutes from "./mocks/routes/user.mock.routes.js";
+import ProductMockRoutes from "./mocks/routes/product.mocks.routes.js";
 import OrderMockRoutes from "./mocks/routes/order.mocks.routes.js";
 import DeliveryRoutes from "./mocks/routes/delivery.mocks.routes.js";
 
@@ -58,6 +59,7 @@ app.use("/api/deliveries", DeliveriesRoutes);
 
 if(env.NODE_ENV !== "production"){
     app.use("/api/mocks", UserMockRoutes);
+    app.use("/api/mocks", ProductMockRoutes);
     app.use("/api/mocks", OrderMockRoutes);
     app.use("/api/mocks", DeliveryRoutes);
 }

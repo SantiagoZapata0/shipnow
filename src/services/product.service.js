@@ -1,6 +1,6 @@
 import ProductRepository from "../repositories/products.repository.js";
-import { PRODUCT_STATUS } from "../constants/constants.js";
 import CustomError from "../errors/custom-error.js";
+import { PRODUCT_STATUS } from "../constants/constants.js";
 
 class ProductService{
     static async getAllProducts(){
@@ -42,6 +42,7 @@ class ProductService{
         }
 
         return {
+            _id: product._id,
             title: product.title,
             description: product.description,
             code: product.code,
@@ -76,6 +77,7 @@ class ProductService{
         const createdProduct = await ProductRepository.createProduct({title, description, code, price, stock, category, status, thumbnails})
         
         return {
+            _id: createdProduct._id,
             title: createdProduct.title,
             description: createdProduct.description,
             code: createdProduct.code,

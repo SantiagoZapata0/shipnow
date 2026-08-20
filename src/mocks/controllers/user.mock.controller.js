@@ -4,8 +4,7 @@ import logger from "../../config/logger.js";
 class UserMockController{
     static async mockingUsers(req, res, next){
         try{
-            const rawCount = req.query.count || 100;
-            const count = parseInt(rawCount);
+            const count = parseInt(req.query.count || 100, 10);
             const users = await UserMockService.generateMockUsers(count);
 
             logger.info(`Mocks de usuarios generados. Cantidad generada: ${count}`);

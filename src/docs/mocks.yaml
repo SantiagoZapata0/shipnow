@@ -1,4 +1,30 @@
 paths:
+  /api/mocks/products:
+    get:
+      tags:
+        - Mocks
+      summary: Get product mocks
+      parameters:
+        - $ref: "#/components/Parameters/CountQueryParam"
+      responses:
+        "200":
+          $ref: "#/components/GoodResponses/MockingProductsResponse"
+        "400":
+          $ref: "#/components/BadResponses/InvalidMockCountResponse"
+    post:
+      tags:
+        - Mocks
+      summary: Get product mocks and save to database
+      requestBody:
+        $ref: "#/components/RequestBodies/SaveToDbAndCountRequest"
+      responses:
+        "201":
+          $ref: "#/components/GoodResponses/GenerateProductsResponse"
+        "400":
+          $ref: "#/components/BadResponses/InvalidMockCountResponse"
+        "404":
+          $ref: "#/components/BadResponses/MockDataNotFoundResponse"
+
   /api/mocks/deliveries:
     get:
       tags:

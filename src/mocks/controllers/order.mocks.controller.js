@@ -4,8 +4,7 @@ import logger from "../../config/logger.js";
 class OrderMockController{
     static async mockingOrders(req, res, next){
         try{
-            const rawCount = req.query.count || 100;
-            const count = parseInt(rawCount);
+            const count = parseInt(req.query.count || 100, 10);
             const orders = await OrderMockService.generateMockOrders(count)
 
             logger.info(`Mocks de ordenes generados. Cantidad generada: ${count}`)

@@ -289,6 +289,28 @@ export const GoodResponses = {
 
     //* Mock endpoints responses
 
+    MockingProductsResponse: {
+        description: "Response when a product mock is generated",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/GoodRqSchemas/MockingProductsStatus"
+                }
+            }
+        }
+    },
+
+    GenerateProductsResponse: {
+        description: "Response when a product mock is generated and saved to the database",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/GoodRqSchemas/GenerateProductsStatus"
+                }
+            }
+        }
+    },
+
     MockingDeliveriesResponse: {
         description: "Response when a delivery mock is generated",
         content: {

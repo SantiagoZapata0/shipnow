@@ -544,6 +544,48 @@ export const GoodRqSchemas = {
 
     //* Mock status
 
+    MockingProductsStatus: {
+        type: "object",
+        properties: {
+            statusCode: { type: "number", example: 200 },
+            message: { type: "string", example: "Product mocks generated" },
+            payload: {
+                type: "array",
+                example: [{
+                    title: "Ergonomic Steel Chair",
+                    description: "Comfortable chair for office use",
+                    code: "PROD-550e8400-e29b-41d4-a716-446655440000-0",
+                    price: 15000,
+                    stock: 35,
+                    category: "Furniture",
+                    status: "available",
+                    thumbnails: ["https://example.com/product.jpg"]
+                }]
+            }
+        }
+    },
+
+    GenerateProductsStatus: {
+        type: "object",
+        properties: {
+            statusCode: { type: "number", example: 201 },
+            message: { type: "string", example: "Product mocks generated and saved to the database" },
+            payload: {
+                type: "array",
+                example: [{
+                    title: "Ergonomic Steel Chair",
+                    description: "Comfortable chair for office use",
+                    code: "PROD-550e8400-e29b-41d4-a716-446655440000-0",
+                    price: 15000,
+                    stock: 35,
+                    category: "Furniture",
+                    status: "available",
+                    thumbnails: ["https://example.com/product.jpg"]
+                }]
+            }
+        }
+    },
+
     MockingDeliveriesStatus: {
         type: "object",
         properties: {
