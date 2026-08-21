@@ -16,7 +16,7 @@ class ProductMocksService {
         const statuses = Object.values(PRODUCT_STATUS);
 
         const products = Array.from({ length: count }, (_, index) => ({
-            _id,
+            _id: faker.database.mongodbObjectId(),
             title: faker.commerce.productName(),
             description: faker.commerce.productDescription(),
             code: `PROD-0${Math.random(25)}`,

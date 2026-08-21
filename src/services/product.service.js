@@ -98,7 +98,7 @@ class ProductService{
         }
 
         return {
-            id: updatedProduct._id,
+            _id: updatedProduct._id,
             title: updatedProduct.title,
             description: updatedProduct.description,
             code: updatedProduct.code,
@@ -119,6 +119,7 @@ class ProductService{
         }
 
         return {
+            _id: deletedProduct._id,
             title: deletedProduct.title,
             description: deletedProduct.description,
             code: deletedProduct.code,
