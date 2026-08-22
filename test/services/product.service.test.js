@@ -24,12 +24,12 @@ describe("Test unitario sobre Product Service", function(){
             expect(product).to.be.an("object").and.to.have.property("_id")
         })
 
-        it("Se deben obtener todos los productos de la base de datos", async function(){
+        it("Se deben obtener todos los productos", async function(){
             const products = await ProductService.getAllProducts();
             expect(products).to.be.an("array");
         });
 
-        it("Se debe obtener un producto por su ID", async function(){
+        it("Se debe obtener un producto por ID", async function(){
             const products = await ProductService.getProdById(this.product._id)
             expect(products).to.be.an("object").and.to.have.property("_id")
         })
@@ -41,7 +41,7 @@ describe("Test unitario sobre Product Service", function(){
         })
 
     describe("Casos de error", function(){
-        it("[getById]: Por producto no encontrado (abarca UPDATE y DELETE)", async function(){
+        it("[getById | update | delete]: Por producto no encontrado", async function(){
             try{
                 await ProductService.getProdById("6a67d75d099a912328df3da0")
                 expect.fail("Se esperaba un error, pero no ocurrio")
@@ -113,5 +113,4 @@ describe("Test unitario sobre Product Service", function(){
     after(async function(){
        await disconnectDbSv() 
     })
-
 })

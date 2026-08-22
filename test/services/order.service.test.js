@@ -63,7 +63,7 @@ describe("Test unitario sobre Order Service", function(){
             }
         })
 
-        it("[create]: Por usuario no existente", async function(){
+        it("[create]: Por usuario inexistente", async function(){
             try{
                 await UserService.getById("6a600464e8abf4852ef16211")
                 expect.fail("Se esperaba un error, pero no ocurrio")

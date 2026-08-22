@@ -80,7 +80,7 @@ describe("Test unitario de User Service", function(){
             }
         })
 
-        it("[getById]: Por usuario inexistente (abarca UPDATE y DELETE)", async function(){
+        it("[getById | update | delete]: Por usuario inexistente", async function(){
             try{
                 await UserService.getById("6a67d75d099a912328df3da0")
                 expect.fail("Se esperaba un error, pero no ocurrio")
