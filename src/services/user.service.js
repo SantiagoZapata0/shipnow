@@ -14,7 +14,7 @@ class UserService{
         }))
     }
 
-    static async getByRole({role}){
+    static async getByRole(role){
 
         if(role === undefined){
             throw new CustomError("BAD_REQUEST", "Debe especificar un rol para filtrar los usuarios.");
@@ -63,6 +63,7 @@ class UserService{
         }
         
         return {
+            _id: userById._id,
             first_name: userById.first_name,
             last_name: userById.last_name,
             email: userById.email,
@@ -89,6 +90,7 @@ class UserService{
         const userCreated = await UserRepository.createOne({first_name, last_name, email, password, role})
 
         return {
+            _id: userCreated._id,
             first_name: userCreated.first_name,
             last_name: userCreated.last_name,
             email: userCreated.email,
@@ -111,6 +113,7 @@ class UserService{
         const updatedUser = await UserRepository.updateOne(id, data)
 
         return {
+            _id: updatedUser._id,
             first_name: updatedUser.first_name,
             last_name: updatedUser.last_name,
             email: updatedUser.email,
@@ -126,6 +129,7 @@ class UserService{
         }
 
         return {
+            _id: deletedUser._id,
             first_name: deletedUser.first_name,
             last_name: deletedUser.last_name,
             email: deletedUser.email,
