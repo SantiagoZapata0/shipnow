@@ -17,3 +17,11 @@ for (const env_var of env_vars) {
         throw new customError("INTERNAL_SERVER_ERROR", `La variable de entorno ${env_var} no está definida.`);
     }
 }
+
+if(env.NODE_ENV === "test" && !process.env.MONGO_KEY_TEST){
+    throw new Error("Missing required environment variable: MONGO_KEY_TEST");
+}
+
+export function getDbUri(){
+    return env.NODE_ENV === "test" ? process.env.MONGO_KEY_TEST : env.MONGO_KEY
+}

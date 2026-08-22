@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { env } from "./env.js";
+import{ getDbUri } from "../config/env.js"
 
 export async function connectDB(){
-    return mongoose.connect(env.MONGO_KEY)
+    return mongoose.connect(getDbUri())
 }
