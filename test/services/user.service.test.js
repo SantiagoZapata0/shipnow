@@ -50,46 +50,47 @@ describe("Test unitario de User Service", function(){
     })
 
     describe("Casos de error", function(){
-        it("Por insertar un rol invalido [getByRole]", async function(){
+        it("[getByRole]: Por insertar un rol invalido", async function(){
             try{
                 await UserService.getByRole("organizer")
-                expect.fail("Se esperaba un error pero no ocurrio")
+                expect.fail("Se esperaba un error, pero no ocurrio")
             } catch(err){
                 expect(err.code).to.equal("VALIDATION_ERROR")
                 expect(err.statusCode).to.equal(422)
             }
         })
 
-        it("Por no insertar un rol [getByRole]", async function(){
+        it("[getByRole]: Por no insertar un rol", async function(){
             try{
                 await UserService.getByRole(undefined)
-                expect.fail("Se esperaba un error pero no ocurrio")
+                expect.fail("Se esperaba un error, pero no ocurrio")
             } catch(err){
                 expect(err.code).to.equal("BAD_REQUEST")
                 expect(err.statusCode).to.equal(400)
             }
         })
 
-        it("Por email inexistente [getByEmail]", async function(){
+        it("[getByEmail]: Por email inexistente", async function(){
             try{
                 await UserService.getByEmail("example@yahoo,net")
-                expect.fail("Se esperaba un error pero no ocurrio")
+                expect.fail("Se esperaba un error, pero no ocurrio")
             } catch(err){
                 expect(err.code).to.equal("NOT_FOUND")
                 expect(err.statusCode).to.equal(404)
             }
         })
 
-        it("Por usuario inexistente [getById] (Abarca UPDATE y DELETE)", async function(){
+        it("[getById]: Por usuario inexistente (abarca UPDATE y DELETE)", async function(){
             try{
                 await UserService.getById("6a67d75d099a912328df3da0")
+                expect.fail("Se esperaba un error, pero no ocurrio")
             } catch(err){
                 expect(err.code).to.equal("NOT_FOUND")
                 expect(err.statusCode).to.equal(404)
             }
         })
 
-        it("Por campos faltantes [create]", async function(){
+        it("[create]: Por campos faltantes ", async function(){
             const invalidUser = {...this.mockUser[0], first_name: undefined}
 
             try{
@@ -101,7 +102,7 @@ describe("Test unitario de User Service", function(){
             }
         });
 
-        it("Por contraseña menor a 6 caracteres [create]", async function(){
+        it("[create]: Por contraseña menor a 6 caracteres", async function(){
             const passwordShortUser = { ...this.mockUser[0], password: "123ab"}
 
             try{
@@ -113,7 +114,7 @@ describe("Test unitario de User Service", function(){
             }
         })
 
-        it("Por email ya registrado [create]", async function(){
+        it("[create]: Por email ya registrado", async function(){
             const emailAlreadyInUse = { ...this.mockUser[0], email: "Clarence69@yahoo.com"}
 
             try{
@@ -125,7 +126,7 @@ describe("Test unitario de User Service", function(){
             }
         })
 
-        it("Por campos faltantes [update]", async function(){
+        it("[update]: Por campos faltantes", async function(){
             try{
                 await UserService.updateOneUser("6a67d75d209a976028df3da0", {})
                 expect.fail("Se esperaba un error, pero no ocurrio")

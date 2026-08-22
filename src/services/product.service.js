@@ -97,6 +97,10 @@ class ProductService{
             throw new CustomError("NOT_FOUND", "Producto no encontrado.");
         }
 
+        if(!data || Object.keys(data).length === 0){
+            throw new CustomError("BAD_REQUEST", "Faltan campos obligatorios.");
+        }
+
         return {
             _id: updatedProduct._id,
             title: updatedProduct.title,
