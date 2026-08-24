@@ -50,6 +50,11 @@ describe("Test unitario de User Service", function(){
     })
 
     describe("Casos de error", function(){
+        before(async function(){
+            const mockUser = await UserMockService.generateMockUsers(1)
+            const createdUser = await UserService.createOneUser(mockUser[0])
+            this.testUser = createdUser
+        })
         it("[getByRole]: Por insertar un rol invalido", async function(){
             try{
                 await UserService.getByRole("organizer")
@@ -115,7 +120,7 @@ describe("Test unitario de User Service", function(){
         })
 
         it("[create]: Por email ya registrado", async function(){
-            const emailAlreadyInUse = { ...this.mockUser[0], email: "Clarence69@yahoo.com"}
+            const emailAlreadyInUse = { ...this.mockUser[0], email: this.testUser.email}
 
             try{
                 await UserService.createOneUser(emailAlreadyInUse)
@@ -128,7 +133,7 @@ describe("Test unitario de User Service", function(){
 
         it("[update]: Por campos faltantes", async function(){
             try{
-                await UserService.updateOneUser("6a67d75d209a976028df3da0", {})
+                await UserService.updateOneUser(this.testUser._id, {})
                 expect.fail("Se esperaba un error, pero no ocurrio")
             } catch(err){
                 expect(err.code).to.equal("BAD_REQUEST")

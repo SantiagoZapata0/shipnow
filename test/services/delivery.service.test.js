@@ -2,6 +2,8 @@ import { expect } from "chai";
 import { connectDbSv, disconnectDbSv } from "../../src/utils/test.utils.js";
 import DeliveryService from "../../src/services/delivery.service.js";
 import DeliveryMockService from "../../src/mocks/services/delivery.mocks.service.js";
+import UserMockService from "../../src/mocks/services/user.mocks.service.js";
+import UserService from "../../src/services/user.service.js";
 
 describe("Test unitario sobre Delivery Service", function(){
     before(async function(){
@@ -40,6 +42,17 @@ describe("Test unitario sobre Delivery Service", function(){
     })
 
     describe("Casos de error", function(){
+        before(async function(){
+           
+            const mockUser = await UserMockService.generateMockUsers(1);
+            const createdUser = await UserService.createOneUser({...mockUser[0], role: "user"});
+            this.userTest = createdUser._id;
+
+            const mockDelivery = await DeliveryMockService.generateMockDeliveries(1);
+            const createdDelivery = await DeliveryService.createOneDelivery(mockDelivery[0]);
+            this.deliveryTest = createdDelivery;
+        })
+
         it("[getById | create | update | delete]: Por entrega no encontrada", async function(){
             try{
                 await DeliveryService.getDeliveryById("6a67d8a1209a976028df3a99")
@@ -63,7 +76,7 @@ describe("Test unitario sobre Delivery Service", function(){
         })
 
         it("[create | update]: Por usuario sin rol de repartidor", async function(){
-            const invalidCourier = {...this.mockDelivery[0], courier: "6a600464e8abf4852ef1622a"}
+            const invalidCourier = {...this.mockDelivery[0], courier: this.userTest._id}
 
             try{
                 await DeliveryService.createOneDelivery(invalidCourier)
@@ -112,7 +125,7 @@ describe("Test unitario sobre Delivery Service", function(){
 
         it("[update]: Por campos faltantes", async function(){
             try{
-                await DeliveryService.updateOneDelivery("6a67d8a1209a976028df3dce", {})
+                await DeliveryService.updateOneDelivery(this.deliveryTest._id, {})
                 expect.fail("Se esperaba un error, pero no ocurrio")
             } catch(err){
                 expect(err.code).to.equal("BAD_REQUEST")

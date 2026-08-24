@@ -41,6 +41,11 @@ describe("Test unitario sobre Product Service", function(){
         })
 
     describe("Casos de error", function(){
+        before(async function(){
+            const mockProduct = await ProductMocksService.generateMockProducts(1)
+            const createdProduct = await ProductService.createOneProduct(mockProduct[0])
+            this.testProduct = createdProduct
+        })
         it("[getById | update | delete]: Por producto no encontrado", async function(){
             try{
                 await ProductService.getProdById("6a67d75d099a912328df3da0")
@@ -101,7 +106,7 @@ describe("Test unitario sobre Product Service", function(){
         
         it("[update]: Por campos faltantes", async function(){
             try{
-                await ProductService.updateOneProduct("6a878f2b781d03e63ba6f366", {})
+                await ProductService.updateOneProduct(this.testProduct._id, {})
                 expect.fail("Se esperaba un error, pero no ocurrio")
             } catch(err){
                 expect(err.code).to.equal("BAD_REQUEST")

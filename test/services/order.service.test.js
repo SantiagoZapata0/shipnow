@@ -4,6 +4,7 @@ import OrderMockService from "../../src/mocks/services/order.mocks.service.js";
 import OrderService from "../../src/services/order.service.js";
 import UserService from "../../src/services/user.service.js";
 import ProductService from "../../src/services/product.service.js";
+import ProductMocksService from "../../src/mocks/services/product.mocks.service.js";
 
 describe("Test unitario sobre Order Service", function(){
     before(async function (){
@@ -41,6 +42,15 @@ describe("Test unitario sobre Order Service", function(){
     })
 
     describe("Casos de error", function(){
+        before(async function(){
+            const mockProduct = await ProductMocksService.generateMockProducts(1)
+            const createdProduct = await ProductService.createOneProduct(mockProduct[0])
+            this.testProduct = createdProduct
+
+            const mockOrder = await OrderMockService.generateMockOrders(1)
+            const createdOrder = await OrderService.createOneOrder(mockOrder[0])
+            this.testOrder = createdOrder
+        })
         it("[getById | update | delete]: Por orden no encontrada", async function(){
             try{
                 await OrderService.getOrderById("6a63d7e4209a546028fd3da5")
@@ -132,7 +142,7 @@ describe("Test unitario sobre Order Service", function(){
         })
 
         it("[create | update]: Por cantidad de items invalida", async function(){
-            const invalidQuantity = {...this.mockOrder[0], items: [{product: "6a67d6f5209a976028df3d95", quantity: 0}]}
+            const invalidQuantity = {...this.mockOrder[0], items: [{product: this.testProduct._id, quantity: 0}]}
 
             try{
                 await OrderService.createOneOrder(invalidQuantity)
@@ -145,7 +155,7 @@ describe("Test unitario sobre Order Service", function(){
 
         it("[update]: Por campos faltantes", async function(){
             try{
-                await OrderService.updateOneOrder("6a67d7e4209a976028df3da1", {})
+                await OrderService.updateOneOrder(this.testOrder._id, {})
                 expect.fail("Se esperaba un error, pero no ocurrio")
             } catch(err){
                 expect(err.code).to.equal("BAD_REQUEST")
