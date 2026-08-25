@@ -5,10 +5,11 @@ API REST para administrar la operación de una logística de distribución: usua
 ## Funcionalidades
 
 - CRUD de usuarios, productos, pedidos y entregas.
+- Suite automatizada de pruebas de servicios, rutas HTTP y generadores/endpoints de mocks, ejecutada contra una base de datos de prueba aislada.
 - Gestión de roles, estados y prioridades mediante constantes centralizadas.
 - Cálculo del total de un pedido a partir de los productos y cantidades recibidos.
 - Validación de referencias entre entidades: un pedido requiere un usuario y productos existentes; una entrega requiere un pedido existente y, si se asigna, un usuario con rol `courier`.
-- Módulo de mocks para usuarios, pedidos y entregas, con opción de persistirlos en MongoDB fuera de producción.
+- Módulo de mocks para usuarios, productos, pedidos y entregas, con opción de persistirlos en MongoDB fuera de producción.
 - Manejo centralizado de errores y logging con rotación diaria de archivos.
 - Documentación OpenAPI disponible desde Swagger UI.
 
@@ -36,11 +37,12 @@ Crear un archivo `.env` en la raíz a partir de `.env.example`:
 ```env
 PORT=3000
 MONGO_KEY=mongodb+srv://<usuario>:<password>@<cluster>/<base-de-datos>
+MONGO_KEY_TEST=mongodb+srv://<usuario>:<password>@<cluster>/<base-de-datos-de-prueba>
 NODE_ENV=development
 JWT_SECRET=<secreto>
 ```
 
-Las cuatro variables son obligatorias: la aplicación valida su presencia antes de iniciar. Luego ejecutar:
+La aplicación valida `PORT`, `MONGO_KEY`, `NODE_ENV` y `JWT_SECRET` antes de iniciar. Al ejecutar pruebas, también requiere `MONGO_KEY_TEST`. `MONGO_KEY` se usa fuera de pruebas y `MONGO_KEY_TEST` es la URI exclusiva de la suite; deben apuntar a bases de datos diferentes. Luego ejecutar:
 
 ```bash
 pnpm run dev
@@ -133,7 +135,7 @@ La especificación de Swagger es la referencia para cuerpos, ejemplos y respuest
 | Productos | `GET`, `POST /api/products`; `GET /api/products/available`; `GET`, `PUT`, `DELETE /api/products/:pid` |
 | Pedidos | `GET`, `POST /api/orders`; `GET`, `PUT`, `DELETE /api/orders/:oid` |
 | Entregas | `GET`, `POST /api/deliveries`; `GET`, `PUT`, `DELETE /api/deliveries/:did` |
-| Mocks* | `GET`, `POST /api/mocks/users`; `GET`, `POST /api/mocks/orders`; `GET`, `POST /api/mocks/deliveries` |
+| Mocks* | `GET`, `POST /api/mocks/users`; `GET`, `POST /api/mocks/products`; `GET`, `POST /api/mocks/orders`; `GET`, `POST /api/mocks/deliveries` |
 
 \* Las rutas de mocks solo se montan cuando `NODE_ENV` es distinto de `production`.
 
@@ -150,13 +152,58 @@ Los endpoints `POST /api/mocks/<recurso>` aceptan:
 }
 ```
 
-Con `saveToDatabase: true`, los datos se insertan en MongoDB y la respuesta es `201`. Si es `false` o se omite, se generan pero no se guardan y se responde `200`.
+`count` es obligatorio en las solicitudes `POST`, se convierte a entero y debe estar entre 1 y 100. Un valor ausente o inválido devuelve `400` con el código `INVALID_MOCK_COUNT`. Con `saveToDatabase: true`, los datos se insertan en MongoDB y la respuesta es `201`. Si es `false` o se omite, se generan pero no se guardan y se responde `200`.
 
 - Los mocks de usuarios generan roles válidos al azar.
+- Los de productos generan código, precio, stock, categoría, miniaturas y un estado válido.
 - Los de pedidos requieren usuarios y productos ya existentes.
 - Los de entregas requieren pedidos existentes; solo asignan repartidor si hay usuarios con rol `courier`.
 
 Para persistir datos relacionados, el orden recomendado es: usuarios, productos, pedidos y finalmente entregas.
+
+Cuando se solicita persistencia, la respuesta `201` incluye en `payload` los documentos devueltos por MongoDB, por lo que incorpora los datos asignados durante el guardado (por ejemplo, identificadores). Esto permite usar la respuesta inmediatamente en operaciones posteriores. Si no se solicita persistencia, la respuesta es `200` y contiene solamente los mocks generados.
+
+## Pruebas automatizadas
+
+El proyecto cuenta con una suite basada en **Mocha**, **Chai** y **Supertest**. Faker se utiliza para preparar datos válidos y variables en las pruebas. Los archivos se encuentran bajo `test/` y Mocha detecta los que terminan en `.test.js` dentro de sus subdirectorios.
+
+La suite se ejecuta con:
+
+```bash
+pnpm test
+```
+
+El script configurado es:
+
+```json
+"test": "cross-env NODE_ENV=test mocha \"test/**/*.test.js\""
+```
+
+`cross-env` establece `NODE_ENV=test` solo para el proceso de esa ejecución, de forma compatible con distintos sistemas operativos; no modifica el archivo `.env` ni el entorno de la terminal. Al iniciarse las pruebas, `getDbUri()` selecciona `MONGO_KEY_TEST` en lugar de `MONGO_KEY`. Si esa variable no está definida, la aplicación detiene el inicio con un error para evitar ejecutar pruebas contra la base de datos habitual.
+
+Antes de correrlas, completar el archivo `.env` con todas las variables requeridas. Un ejemplo de separación segura es:
+
+```env
+PORT=3000
+MONGO_KEY=mongodb+srv://<usuario>:<password>@<cluster>/shipnow
+MONGO_KEY_TEST=mongodb+srv://<usuario>:<password>@<cluster>/shipnow_test
+NODE_ENV=development
+JWT_SECRET=<secreto>
+```
+
+Aunque `NODE_ENV` figure como `development` en `.env`, `pnpm test` lo reemplaza temporalmente por `test`. `PORT`, `MONGO_KEY` y `JWT_SECRET` siguen siendo necesarios porque la validación de entorno exige todas las variables declaradas; la conexión efectiva de la suite usa únicamente `MONGO_KEY_TEST`.
+
+Las pruebas son de integración con MongoDB, no usan una base de datos en memoria. El helper `src/utils/test.utils.js` abre la conexión y el servidor antes de cada bloque de pruebas, y los cierra al finalizar. Las pruebas que persisten entidades eliminan los registros de prueba que generan como parte de su limpieza; de todos modos, la URI de pruebas debe ser una base de datos desechable y nunca la de producción.
+
+La cobertura actual se organiza de esta manera:
+
+| Ubicación | Alcance |
+|---|---|
+| `test/services/` | Reglas de negocio de usuarios, productos, pedidos y entregas: altas, actualizaciones, eliminaciones y validaciones de datos, estados, roles y referencias. |
+| `test/routes/` | Respuestas HTTP de usuarios, productos, pedidos y entregas, además de las rutas de Swagger y logger. Se comprueban casos correctos y errores esperados. |
+| `test/mocks/` | Generación de mocks de usuarios, productos, pedidos y entregas, validación de cantidades y rutas `GET`/`POST` de mocks. |
+
+En particular, las pruebas de rutas de mocks verifican los tres comportamientos principales para cada recurso: generación sin persistir (`200`), generación con persistencia (`201`) y rechazo de una cantidad inválida (`400` con `INVALID_MOCK_COUNT`). Para pedidos y entregas, la base de prueba debe disponer de las entidades relacionadas que exigen sus generadores; de lo contrario, la API responde `MOCK_DATA_NOT_FOUND`.
 
 ## Errores y logging
 
@@ -175,5 +222,3 @@ Winston registra en consola y guarda errores en `logs/error.log`; además crea a
 ## Estado actual y consideraciones de seguridad
 
 La autenticación con JWT y la autorización por rol aún no están implementadas, aunque `JWT_SECRET` ya es una variable requerida. En particular, `GET /api/users/email` actualmente devuelve la contraseña almacenada y no está protegido. No se debe exponer esta API en producción hasta implementar autenticación, autorización y hasheo de contraseñas.
-
-No hay una suite de pruebas automatizadas configurada todavía; el script `pnpm test` es un placeholder.
