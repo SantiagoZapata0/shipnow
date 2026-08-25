@@ -55,6 +55,7 @@ describe("Test unitario de User Service", function(){
             const createdUser = await UserService.createOneUser(mockUser[0])
             this.testUser = createdUser
         })
+
         it("[getByRole]: Por insertar un rol invalido", async function(){
             try{
                 await UserService.getByRole("organizer")
@@ -138,6 +139,12 @@ describe("Test unitario de User Service", function(){
             } catch(err){
                 expect(err.code).to.equal("BAD_REQUEST")
                 expect(err.statusCode).to.equal(400)
+            }
+        })
+
+        after(async function(){
+            if(this.testUser){
+                await UserService.deleteOneUser(this.testUser._id)
             }
         })
     })    

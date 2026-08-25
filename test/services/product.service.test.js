@@ -113,6 +113,13 @@ describe("Test unitario sobre Product Service", function(){
                 expect(err.statusCode).to.equal(400)
             }
         })
+
+        after(async function(){
+            
+            if(this.testProduct){
+                await ProductService.deleteOneProduct(this.testProduct._id)
+            }
+        })
     })
 
     after(async function(){

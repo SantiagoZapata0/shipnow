@@ -132,6 +132,16 @@ describe("Test unitario sobre Delivery Service", function(){
                 expect(err.statusCode).to.equal(400)
             }
         })
+
+        after(async function(){
+            if(this.userTest){
+                await UserService.deleteOneUser(this.userTest._id)
+            }
+
+            if(this.deliveryTest){
+                await DeliveryService.deleteOneDelivery(this.deliveryTest._id)
+            }
+        })
     })
 
     after(async function(){

@@ -162,6 +162,17 @@ describe("Test unitario sobre Order Service", function(){
                 expect(err.statusCode).to.equal(400)
             }
         })
+
+        after(async function(){
+            
+            if(this.testProduct){
+                await ProductService.deleteOneProduct(this.testProduct._id)
+            }
+
+            if(this.testOrder){
+                await OrderService.deleteOneOrder(this.testOrder._id)
+            }
+        })
     })
 
     after(async function(){
