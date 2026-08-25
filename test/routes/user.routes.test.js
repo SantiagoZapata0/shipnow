@@ -56,7 +56,7 @@ describe("/api/users", function(){
                 expect(response.body).to.have.property("message")
             })
 
-            it("Respuesta esperada en caso de usuario no encontrado: [400]", async function(){
+            it("Respuesta esperada en caso de usuario no encontrado: [404]", async function(){
                 const response = await request.get("/api/users/6a8a2586c5e7ba89330e5290")
                 expect(response.body.error).to.equal("NOT_FOUND")
                 expect(response.statusCode).to.equal(404)
@@ -106,7 +106,7 @@ describe("/api/users", function(){
                 this.userTest = createdUser
             })
 
-            it("Respuesta esperada en caso de actualizar un usuario", async function(){
+            it("Respuesta esperada en caso de actualizar un usuario: [200]", async function(){
                 const response = await request.put(`/api/users/${this.userTest._id}`).send({first_name: "Mauricio"})
                 expect(response.body.payload).to.be.an("object").and.to.have.property("_id")
                 expect(response.statusCode).to.equal(200)
@@ -128,7 +128,7 @@ describe("/api/users", function(){
                 this.userTest = createdUser
             })
 
-            it("Respuesta esperada en caso de eliminar un usuario", async function(){
+            it("Respuesta esperada en caso de eliminar un usuario: [200]", async function(){
                 const response = await request.delete(`/api/users/${this.userTest._id}`)
                 expect(response.body.payload).to.be.an("object").and.to.have.property("_id")
                 expect(response.statusCode).to.equal(200)
