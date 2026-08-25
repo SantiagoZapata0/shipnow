@@ -21,9 +21,9 @@ class OrderMockController{
             const orders = await OrderMockService.generateMockOrders(countInt);
 
             if(saveToDatabase){
-                await OrderMockService.saveMockOrders(orders);
+                const savedOrders = await OrderMockService.saveMockOrders(orders);
                 logger.info(`Mocks de ordenes generados y guardados en base de datos. Cantidad generada: ${count}`)
-                return res.status(201).json({statusCode: 201, message: "Ordenes creadas y guardadas en base de datos.", payload: orders})
+                return res.status(201).json({statusCode: 201, message: "Ordenes creadas y guardadas en base de datos.", payload: savedOrders})
             }
 
             logger.info(`Mocks de ordenes generados. Cantidad generada: ${count}`)

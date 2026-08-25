@@ -21,9 +21,9 @@ class DeliveryMockController{
             const deliveries = await DeliveryMockService.generateMockDeliveries(countInt);
 
             if(saveToDatabase){
-                await DeliveryMockService.saveMockDeliveries(deliveries);
+                const savedDeliveries = await DeliveryMockService.saveMockDeliveries(deliveries);
                 logger.info(`Mocks de entregas generados y guardados en base de datos. Cantidad generada: ${count}`)
-                return res.status(201).json({statusCode: 201, message: "Entregas mock generadas y guardados en base de datos.", payload: deliveries});
+                return res.status(201).json({statusCode: 201, message: "Entregas mock generadas y guardados en base de datos.", payload: savedDeliveries});
             }
 
             logger.info(`Mocks de entregas generados. Cantidad generada: ${count}`)

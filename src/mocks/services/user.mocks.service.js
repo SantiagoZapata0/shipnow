@@ -24,7 +24,8 @@ class UserMockService{
     }
 
     static saveMockUsers = async (users) => {
-        await UserMockRepository.saveMany(users)
+        const savedUsers = await UserMockRepository.saveMany(users)
+        return savedUsers
     }
 }
 

@@ -55,7 +55,8 @@ class OrderMockService{
     }
 
     static async saveMockOrders(orders){
-        await OrderMocksRepository.saveManyOrders(orders)
+        const savedOrders = await OrderMocksRepository.saveManyOrders(orders)
+        return savedOrders
     }
 }
 

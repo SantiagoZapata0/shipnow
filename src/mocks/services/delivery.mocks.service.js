@@ -43,7 +43,8 @@ class DeliveryMockService{
     }
     
     static async saveMockDeliveries(deliveries){
-        await DeliveryMocksRepository.saveManyDeliveries(deliveries);
+       const savedDeliveries = await DeliveryMocksRepository.saveManyDeliveries(deliveries);
+        return savedDeliveries;
     }
 }
 

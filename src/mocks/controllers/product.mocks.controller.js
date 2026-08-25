@@ -21,9 +21,9 @@ class ProductMocksController {
             const products = await ProductMocksService.generateMockProducts(countInt);
 
             if (saveToDatabase) {
-                await ProductMocksService.saveMockProducts(products);
+                const savedProducts = await ProductMocksService.saveMockProducts(products);
                 logger.info(`Mocks de productos generados y guardados en base de datos. Cantidad generada: ${countInt}`);
-                return res.status(201).json({statusCode: 201, message: "Productos mock generados y guardados en base de datos.", payload: products});
+                return res.status(201).json({statusCode: 201, message: "Productos mock generados y guardados en base de datos.", payload: savedProducts});
             }
 
             logger.info(`Mocks de productos generados. Cantidad generada: ${countInt}`);

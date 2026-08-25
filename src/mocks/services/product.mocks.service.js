@@ -35,7 +35,8 @@ class ProductMocksService {
             throw new CustomError("MOCK_DATA_NOT_FOUND", "No hay productos mock para guardar.");
         }
 
-        return ProductMocksRepository.saveManyProducts(products);
+        const savedProducts = ProductMocksRepository.saveManyProducts(products);
+        return savedProducts
     }
 }
 

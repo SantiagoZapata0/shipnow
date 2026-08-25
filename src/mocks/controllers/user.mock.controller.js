@@ -21,9 +21,9 @@ class UserMockController{
             const users = await UserMockService.generateMockUsers(countInt);
 
             if(saveToDatabase){
-                await UserMockService.saveMockUsers(users);
+                const savedUsers = await UserMockService.saveMockUsers(users);
                 logger.info(`Mocks de usuarios generados y guardados en base de datos. Cantidad generada: ${count}`);
-                return res.status(201).json({statusCode: 201, message: "Usuarios generados y guardados en base de datos.", payload: users});
+                return res.status(201).json({statusCode: 201, message: "Usuarios generados y guardados en base de datos.", payload: savedUsers});
             }
 
             logger.info(`Mocks de usuarios generados. Cantidad generada: ${count}`);
