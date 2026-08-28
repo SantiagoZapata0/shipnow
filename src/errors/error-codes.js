@@ -7,6 +7,10 @@ export const ERROR_CODES = Object.freeze({
         statusCode: 400,
         message: "Invalid resource ID"
     },
+    INVALID_FILE_TYPE:{
+        statusCode: 400,
+        message: "Invalid file type"
+    },  
     DUPLICATE_KEY:{
         statusCode: 409,
         message: "Key already in use"

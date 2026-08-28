@@ -39,7 +39,7 @@ class ProductController{
 
     static async createProduct(req, res, next){
         try{
-            const newProduct = await ProductService.createOneProduct(req.body)
+            const newProduct = await ProductService.createOneProduct({...req.body, thumbnails: req.file ? `src/uploads/documents/${req.file.filename}` : req.body.thumbnails})
             logger.info(`Producto creado. ID: ${newProduct._id}`);
             return res.status(201).json({statusCode: 201, message: `Producto creado.`, payload: newProduct})
         } catch(err){

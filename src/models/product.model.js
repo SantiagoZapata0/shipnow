@@ -34,12 +34,11 @@ const ProductSchema = new Schema({
     },
     status: {
       type: String,
-      required: true,
       default: PRODUCT_STATUS.DRAFT,
       enum: prod_status
     },
     thumbnails: {
-      type: [String],
+      type: [ String ],
       default: [],
     },
   },

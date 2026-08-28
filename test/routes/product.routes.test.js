@@ -79,21 +79,59 @@ describe("/api/products", function(){
     describe("POST", function(){
         describe("Respuestas exitosas", function(){
             before(async function(){
-                const mockProd = await ProductMocksService.generateMockProducts(1)
+                const mockProd = await ProductMocksService.generateMockProducts(2)
                 this.testProd = mockProd
             })
 
-            it("Respuesta esperada en caso de que se cree un producto: [201]", async function(){
+            it("Respuesta esperada en caso de que se cree un producto utilizando JSON: [201]", async function(){
                 const response = await request.post("/api/products").send(this.testProd[0])
-                this.product = response.body.payload
+                this.product1 = response.body.payload
+                expect(response.body.payload).to.be.an("object").and.to.have.property("_id")
+                expect(response.statusCode).to.equal(201)
+            })
+
+            it("Respuesta esperada en caso de que se cree un producto utilizando multipart/form-data: [201]", async function(){
+                const response = await request.post("/api/products")
+                .field("title", this.testProd[1].title)
+                .field("description", this.testProd[1].description)
+                .field("code", this.testProd[1].code)
+                .field("price", this.testProd[1].price)
+                .field("stock", this.testProd[1].stock)
+                .field("category", this.testProd[1].category)
+                .field("status", this.testProd[1].status)
+                .attach("thumbnails", "C:/Users/santi/Downloads/pgasly_2025.png")
+                this.product2 = response.body.payload
                 expect(response.body.payload).to.be.an("object").and.to.have.property("_id")
                 expect(response.statusCode).to.equal(201)
             })
 
             after(async function(){
                 if(this.product){
-                    await ProductService.deleteOneProduct(this.product._id)
+                    await ProductService.deleteOneProduct(this.product1._id)
+                    await ProductService.deleteOneProduct(this.product2._id)
                 }
+            })
+        })
+
+        describe("Respuestas erroneas", function(){
+            before(async function(){
+                const mockProd = await ProductMocksService.generateMockProducts(1)
+                this.testProd = mockProd
+            })
+
+            it("Respuesta esperada en caso de tipo de archivo invalido", async function(){
+                const response = await request.post("/api/products")
+                .field("title", this.testProd[0].title)
+                .field("description", this.testProd[0].description)
+                .field("code", this.testProd[0].code)
+                .field("price", this.testProd[0].price)
+                .field("stock", this.testProd[0].stock)
+                .field("category", this.testProd[0].category)
+                .field("status", this.testProd[0].status)
+                .attach("thumbnails", Buffer.from("Archive_test"), {filename: "test.webp", contentType: "image/webp"})
+                expect(response.body.error).to.equal("INVALID_FILE_TYPE")
+                expect(response.statusCode).to.equal(400)
+                expect(response.body).to.have.property("message")
             })
         })
     })
