@@ -11,6 +11,10 @@ export const ERROR_CODES = Object.freeze({
         statusCode: 400,
         message: "Invalid file type"
     },
+    FILE_TOO_LARGE:{
+        statusCode: 413,
+        message: "Files exceed the size permised"
+    },
     INVALID_DOCUMENT_TYPE:{
         statusCode: 400,
         message: "Invalid document type"

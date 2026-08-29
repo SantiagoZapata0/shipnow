@@ -1,5 +1,5 @@
 import { Schema, model, Types } from "mongoose";
-import { ORDER_PRIORITY, ORDER_STATUS } from "../constants/constants.js";
+import { ORDER_PRIORITY, ORDER_STATUS, DOCUMENT_TYPES } from "../constants/constants.js";
 
 const OrderSchema = new Schema({
     user:{
@@ -33,7 +33,18 @@ const OrderSchema = new Schema({
         type: String,
         default: ORDER_PRIORITY.LOW,
         enum: Object.values(ORDER_PRIORITY)
-    }
+    },
+    documents: [
+        {
+            originalName: { type: String, required: true },
+            generatedName: { type: String, required: true },
+            path: { type: String, required: true },
+            type: { type: String, required: true },
+            size: { type: Number, required: true },
+            documentType: { type: String, enum: Object.values(DOCUMENT_TYPES), required: true },
+            uploadedAt: { type: Date, required: true }
+        }
+    ]
 },
 {
     timestamps: true

@@ -116,7 +116,7 @@ class UserService{
 
         if(files){
              if(effectiveRole === USER_ROLES.COURIER && !files){
-                throw new CustomError("INVALID_FILE_TYPES", "Para ser repartidor necesitas agregar una licencia")
+                throw new CustomError("BAD_REQUEST", "Para ser repartidor necesitas agregar una licencia")
             }
 
             if(files && (!data.documentType || !Object.values(DOCUMENT_TYPES).includes(data.documentType))){
@@ -129,10 +129,14 @@ class UserService{
                 throw new CustomError("INVALID_DOCUMENT_TYPE", "Las licencias son solo para repartidores")
             }
 
+            if(existingUser.documents.length === 3){
+                throw new CustomError("BAD_REQUEST", "Limite de archivos alcanzado")
+            }
+
             const existingDocuments = existingUser.documents.some((doc) => doc.originalName === files.originalname);
             if(existingDocuments){
                 fs.unlinkSync(files.path)
-                throw new CustomError("INVALID_DOCUMENT_TYPE", "El archivo ya existe")
+                throw new CustomError("DUPLICATE_KEY", "Archivo ya existente")
             }
 
             existingUser.documents.push({
@@ -142,7 +146,7 @@ class UserService{
                 type: files.mimetype,
                 size: files.size,
                 documentType: data.documentType,
-                uploadedAt: new Date().toLocaleString("es-AR")
+                uploadedAt: new Date()
             })
             
             await existingUser.save()

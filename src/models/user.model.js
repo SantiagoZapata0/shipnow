@@ -1,5 +1,6 @@
 import { model, Schema } from "mongoose";
 import { USER_ROLES } from "../constants/constants.js";
+import { DOCUMENT_TYPES } from "../constants/constants.js";
 
 const userSchema = new Schema({
     first_name:{
@@ -25,10 +26,17 @@ const userSchema = new Schema({
         default: USER_ROLES.USER,
         enum: Object.values(USER_ROLES)
     },
-    documents:{
-        type: Array,
-        default: []
-    }
+    documents: [
+        {
+            originalName: { type: String, required: true },
+            generatedName: { type: String, required: true },
+            path: { type: String, required: true },
+            type: { type: String, required: true },
+            size: { type: Number, required: true },
+            documentType: { type: String, enum: Object.values(DOCUMENT_TYPES), required: true },
+            uploadedAt: { type: Date, required: true }
+        }
+    ]
 },
 {
     timestamps: true

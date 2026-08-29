@@ -1,5 +1,6 @@
 import OrderService from "../services/order.service.js";
 import logger from "../config/logger.js";
+import { DOCUMENT_TYPES } from "../constants/constants.js"
 
 class OrderController {
     static async getOrders(req, res, next) {
@@ -34,9 +35,13 @@ class OrderController {
 
     static async updateOrder(req, res, next) {
         try {
-            const order = await OrderService.updateOneOrder(req.params.oid, req.body);
+            const order = await OrderService.updateOneOrder(req.params.oid, req.body, req.file);
             logger.info(`Orden actualizada. ID: ${req.params.oid}`);
-            return res.status(200).json({ statusCode: 200, message: "Orden actualizada.", payload: order });
+            if(req.file && req.body.documentType === DOCUMENT_TYPES.PAYMENT_RECEIPT){
+                logger.info(`Comprobante de pago cargado. Archivo: ${req.file.filename}`)
+                return res.status(200).json({statusCode: 200, message: "Orden actualizada", payload: order})
+            }
+            return res.status(200).json({ statusCode: 200, message: "Orden actualizada", payload: order });
         } catch (err) {
             next(err);
         }

@@ -1,4 +1,4 @@
-import { ORDER_PRIORITY, ORDER_STATUS } from "../constants/constants.js";
+import { DOCUMENT_TYPES, ORDER_PRIORITY, ORDER_STATUS } from "../constants/constants.js";
 import CustomError from "../errors/custom-error.js";
 import OrderRepository from "../repositories/order.repository.js";
 import ProductRepository from "../repositories/products.repository.js";
@@ -75,7 +75,7 @@ class OrderService {
         });
     }
 
-    static async updateOneOrder(orderId, data = {}) {
+    static async updateOneOrder(orderId, data = {}, files) {
         const order = await OrderRepository.getById(orderId);
 
         if (!order) {
@@ -83,7 +83,7 @@ class OrderService {
         }
 
         if (!data || Object.keys(data).length === 0) {
-            throw new CustomError("BAD_REQUEST", "Debe indicar al menos un campo para actualizar la orden.");
+            throw new CustomError("BAD_REQUEST", "Debe indicar al menos un campo para actualizar la orden. Si desea enviar un archivo unicamente debe adjuntar el tipo de documento");
         }
 
         const updateData = { ...data };
@@ -137,7 +137,58 @@ class OrderService {
             delete updateData.total;
         }
 
-        return await OrderRepository.update(orderId, updateData);
+        if(files){
+            if(!data.documentType){
+                throw new CustomError("INVALID_DOCUMENT_TYPE", "Debes indicar el tipo de documento a subir")
+            }
+
+            if(data.documentType !== DOCUMENT_TYPES.PAYMENT_RECEIPT){
+                throw new CustomError("BAD_REQUEST", "Las ordenes solo pueden recibir comprobantes de pago")
+            }
+
+            if(order.documents.length === 3){
+                throw new CustomError("BAD_REQUEST", "Limite de archivos alcanzado")
+            }
+
+            const existingDocument = order.documents.some((docs) => docs.originalName === files.originalname)
+
+            if(existingDocument){
+                throw new CustomError("DUPLICATE_KEY", "Archivo ya existente")
+            }
+
+            order.documents.push({
+                originalName: files.originalname,
+                generatedName: files.filename,
+                path: `src/uploads/documents/${files.filename}`,
+                type: files.mimetype,
+                size: files.size,
+                documentType: data.documentType,
+                uploadedAt: new Date()
+            })
+
+            await order.save()
+
+            return {
+                user: order.user,
+                items: order.items,
+                total: order.total,
+                status: order.status,
+                priority: order.priority,
+                documents: order.documents
+            }
+        }
+
+        Object.assign(order, data)
+        await order.save()
+
+        return{
+            user: order.user,
+            items: order.items,
+            total: order.total,
+            status: order.status,
+            priority: order.priority,
+            documents: order.documents
+        }
     }
 
     static async deleteOneOrder(orderId) {

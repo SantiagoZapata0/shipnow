@@ -1,5 +1,6 @@
 import UserService from "../services/user.service.js"
 import logger from "../config/logger.js";
+import { DOCUMENT_TYPES } from "../constants/constants.js";
 
 class UserController {
     static async getUsers(req, res, next){
@@ -62,6 +63,14 @@ class UserController {
         try{
             const user = await UserService.updateOneUser(req.params.uid, req.body, req.file);
             logger.info(`Usuario actualizado. ID: ${req.params.uid}`);
+            if(req.file && req.body.documentType === DOCUMENT_TYPES.COURIER_LICENSE){
+                logger.info(`Licencia de repartidor cargada. Archivo: ${req.file.filename}`)
+                return res.status(200).json({statusCode: 200, message: "Usuario actualizado.", payload: user})
+            }
+            if(req.file && req.body.documentType !== DOCUMENT_TYPES.COURIER_LICENSE){
+                logger.info(`Documentos cargados con exito. Archivo: ${req.file.filename}`)
+                return res.status(200).json({statusCode: 200, message: "Usuario actualizado.", payload: user})
+            } 
             return res.status(200).json({statusCode: 200, message: "Usuario actualizado.", payload: user})
         } catch(err){
             next(err)
