@@ -1,5 +1,6 @@
 import { Router } from "express";
 import UserController from "../controllers/user.controller.js";
+import { uploadDocument } from "../config/multer.js"
 
 const router = Router();
 
@@ -10,7 +11,7 @@ router.get("/:uid", UserController.getUserById);
 
 router.post("/", UserController.createUser);
 
-router.put("/:uid", UserController.updateUser);
+router.put("/:uid", uploadDocument.single("documents"), UserController.updateUser);
 
 router.delete("/:uid", UserController.deleteUser);
 

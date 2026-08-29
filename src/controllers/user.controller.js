@@ -60,7 +60,7 @@ class UserController {
 
     static async updateUser(req, res, next){
         try{
-            const user = await UserService.updateOneUser(req.params.uid, req.body);
+            const user = await UserService.updateOneUser(req.params.uid, req.body, req.file);
             logger.info(`Usuario actualizado. ID: ${req.params.uid}`);
             return res.status(200).json({statusCode: 200, message: "Usuario actualizado.", payload: user})
         } catch(err){

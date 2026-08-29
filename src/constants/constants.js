@@ -32,3 +32,10 @@ export const DELIVERY_STATUS = Object.freeze({
     DELIVERED: "delivered",
     NOT_DELIVERED: "not_delivered",
 })
+
+export const DOCUMENT_TYPES = Object.freeze({
+    PAYMENT_RECEIPT: "payment_receipt",
+    ID_DOCUMENT: "id_document",
+    PROFILE_PHOTO: "profile_photo",
+    COURIER_LICENSE: "courier_license"
+})

@@ -10,6 +10,10 @@ export const ERROR_CODES = Object.freeze({
     INVALID_FILE_TYPE:{
         statusCode: 400,
         message: "Invalid file type"
+    },
+    INVALID_DOCUMENT_TYPE:{
+        statusCode: 400,
+        message: "Invalid document type"
     },  
     DUPLICATE_KEY:{
         statusCode: 409,

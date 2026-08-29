@@ -25,6 +25,10 @@ const userSchema = new Schema({
         default: USER_ROLES.USER,
         enum: Object.values(USER_ROLES)
     },
+    documents:{
+        type: Array,
+        default: []
+    }
 },
 {
     timestamps: true

@@ -1,6 +1,8 @@
 import CustomError from "../errors/custom-error.js";
 import UserRepository from "../repositories/user.repository.js";
+import fs from "fs"
 import { USER_ROLES } from "../constants/constants.js";
+import { DOCUMENT_TYPES } from "../constants/constants.js";
 
 class UserService{
     static async getAll(){
@@ -98,9 +100,11 @@ class UserService{
         };
     }
 
-    static async updateOneUser(id, data){
+    static async updateOneUser(id, data, files){
 
         const existingUser = await UserRepository.getById(id)
+
+        const effectiveRole = data.role !== undefined ? data.role : existingUser.role;
 
         if(!existingUser){
             throw new CustomError("NOT_FOUND", "El usuario no existe.");
@@ -110,16 +114,61 @@ class UserService{
             throw new CustomError("BAD_REQUEST", "Faltan campos obligatorios.");
         }
 
-        const updatedUser = await UserRepository.updateOne(id, data)
+        if(files){
+             if(effectiveRole === USER_ROLES.COURIER && !files){
+                throw new CustomError("INVALID_FILE_TYPES", "Para ser repartidor necesitas agregar una licencia")
+            }
 
-        return {
-            _id: updatedUser._id,
-            first_name: updatedUser.first_name,
-            last_name: updatedUser.last_name,
-            email: updatedUser.email,
-            role: updatedUser.role
-        }
-    }
+            if(files && (!data.documentType || !Object.values(DOCUMENT_TYPES).includes(data.documentType))){
+                fs.unlinkSync(files.path)
+                throw new CustomError("INVALID_DOCUMENT_TYPE", "Debe insertar un tipo de documento valido")
+            }
+
+            if(files && effectiveRole !== USER_ROLES.COURIER && data.documentType === DOCUMENT_TYPES.COURIER_LICENSE){
+                fs.unlinkSync(files.path)
+                throw new CustomError("INVALID_DOCUMENT_TYPE", "Las licencias son solo para repartidores")
+            }
+
+            const existingDocuments = existingUser.documents.some((doc) => doc.originalName === files.originalname);
+            if(existingDocuments){
+                fs.unlinkSync(files.path)
+                throw new CustomError("INVALID_DOCUMENT_TYPE", "El archivo ya existe")
+            }
+
+            existingUser.documents.push({
+                originalName: files.originalname,
+                generatedName: files.filename,
+                path: `src/uploads/documents/${files.filename}`,
+                type: files.mimetype,
+                size: files.size,
+                documentType: data.documentType,
+                uploadedAt: new Date().toLocaleString("es-AR")
+            })
+            
+            await existingUser.save()
+
+                return {
+                    _id: existingUser._id,
+                    first_name: existingUser.first_name,
+                    last_name: existingUser.last_name,
+                    email: existingUser.email,
+                    role: existingUser.role,
+                    documents: existingUser.documents
+                }
+            }
+
+            Object.assign(existingUser, data);
+            await existingUser.save()
+
+            return {
+                _id: existingUser._id,
+                first_name: existingUser.first_name,
+                last_name: existingUser.last_name,
+                email: existingUser.email,
+                role: existingUser.role,
+                documents: existingUser.documents
+            }
+        }   
 
     static async deleteOneUser(id){
         const deletedUser = await UserRepository.deleteOne(id)
