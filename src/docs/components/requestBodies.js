@@ -45,7 +45,7 @@ export const RequestBodies = {
                         role: { type: "string", enum: ["user", "admin", "courier"], example: "courier"},
                         documentType: {
                             type: "string",
-                            enum: ["id_document", "profile_photo", "courier_license"],
+                            enum: ["payment_receipt", "id_document", "profile_photo", "courier_license"],
                             example: "courier_license",
                             description: "Required when documents is attached. courier_license is accepted only when the effective user role is courier."
                         },

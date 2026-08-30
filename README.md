@@ -139,6 +139,65 @@ La especificación de Swagger es la referencia para cuerpos, ejemplos y respuest
 
 \* Las rutas de mocks solo se montan cuando `NODE_ENV` es distinto de `production`.
 
+## Carga de documentos en actualizaciones
+
+Los endpoints de actualizacion de usuarios y pedidos usan Multer. Las actualizaciones sin archivo pueden enviarse como `application/json`; para adjuntar un archivo se debe usar `multipart/form-data`.
+
+| Ruta | Middleware | Campo de archivo | Destino | Tipo de documento admitido |
+|---|---|---|---|---|
+| `PUT /api/users/:uid` | `uploadDocument.single("documents")` | `documents` | `src/uploads/documents/` | `id_document`, `profile_photo`, `courier_license` o `payment_receipt`. `courier_license` solo es valido para usuarios con rol `courier`. |
+| `PUT /api/orders/:oid` | `uploadReceipt.single("documents")` | `documents` | `src/uploads/receipts/` | Solo `payment_receipt`. |
+
+Aunque el campo se llama `documents`, cada solicitud acepta un unico archivo porque ambas rutas usan `.single("documents")`. Multer crea el directorio de destino cuando no existe y genera un nombre con prefijo y marca de tiempo para evitar colisiones: `document-<timestamp>-<nombre-original>` para usuarios y `receipt-<timestamp>-<nombre-original>` para pedidos.
+
+Al enviar un archivo, `documentType` es obligatorio. La API guarda en el recurso el nombre original, nombre generado, tipo MIME, tamano, tipo de documento y fecha de carga. Cada usuario y pedido puede conservar hasta tres documentos; no se permite repetir el nombre original dentro del mismo recurso.
+
+Las validaciones de Multer son comunes a ambos endpoints:
+
+- Formatos permitidos: `image/png`, `image/jpeg` y `application/pdf`.
+- Tamano maximo: 5 MB por archivo.
+- Campo esperado: `documents`.
+
+Ejemplo de actualizacion de usuario sin archivo:
+
+```bash
+curl -X PUT http://localhost:3000/api/users/<uid> \
+  -H "Content-Type: application/json" \
+  -d '{"first_name":"Jane","role":"courier"}'
+```
+
+Ejemplo de carga de una licencia para un repartidor existente. Si el usuario todavia no tiene rol `courier`, se envia `role=courier` en la misma solicitud:
+
+```bash
+curl -X PUT http://localhost:3000/api/users/<uid> \
+  -F "documents=@./licencia.pdf;type=application/pdf" \
+  -F "documentType=courier_license" \
+  -F "role=courier"
+```
+
+Ejemplo de carga de comprobante de pago en un pedido:
+
+```bash
+curl -X PUT http://localhost:3000/api/orders/<oid> \
+  -F "documents=@./comprobante.pdf;type=application/pdf" \
+  -F "documentType=payment_receipt"
+```
+
+En ambos casos la respuesta exitosa es `200` e incluye el recurso actualizado, el arreglo `documents` y `uploadedDocumentType` cuando se adjunto un archivo. Los errores esperados durante una actualizacion con archivo son:
+
+| Estado | Codigo | Cuando ocurre |
+|---|---|---|
+| `400` | `INVALID_FILE_TYPE` | El archivo no es PNG, JPEG o PDF. |
+| `400` | `INVALID_DOCUMENT_TYPE` | Falta `documentType` al adjuntar un archivo, el tipo no es valido para un usuario o se intenta cargar `courier_license` en un usuario que no es repartidor. |
+| `400` | `BAD_REQUEST` | No se envian campos para actualizar, el campo de archivo es distinto de `documents`, se alcanza el limite de tres documentos o un pedido recibe un tipo diferente de `payment_receipt`. |
+| `400` | `INVALID_ID` | El parametro `uid` u `oid` no tiene un formato valido. |
+| `404` | `NOT_FOUND` | No existe el usuario, pedido o recurso relacionado indicado. |
+| `409` | `DUPLICATE_KEY` | Ya existe un documento con el mismo nombre original en el recurso. |
+| `413` | `FILE_TOO_LARGE` | El archivo supera los 5 MB. |
+| `422` | `VALIDATION_ERROR` | Un campo de la actualizacion no cumple las validaciones del modelo. |
+
+Swagger documenta los dos formatos de cuerpo, los campos condicionalmente requeridos y estas respuestas en `PUT /api/users/{uid}` y `PUT /api/orders/{oid}`.
+
 ## Mocks
 
 Los endpoints `GET /api/mocks/<recurso>?count=N` generan datos sin persistirlos. Si `count` no se envía, se generan 100 elementos; el valor se convierte a entero y debe quedar entre 1 y 100.
