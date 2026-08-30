@@ -165,29 +165,20 @@ class OrderService {
                 documentType: data.documentType,
                 uploadedAt: new Date()
             })
-
-            await order.save()
-
-            return {
-                user: order.user,
-                items: order.items,
-                total: order.total,
-                status: order.status,
-                priority: order.priority,
-                documents: order.documents
-            }
         }
 
         Object.assign(order, data)
         await order.save()
 
         return{
+            _id: order._id,
             user: order.user,
             items: order.items,
             total: order.total,
             status: order.status,
             priority: order.priority,
-            documents: order.documents
+            documents: order.documents,
+            uploadedDocumentType: files ? data.documentType : null
         }
     }
 

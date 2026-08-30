@@ -400,6 +400,51 @@ export const BadResponses = {
             }
         }
     },
+    InvalidFileTypeResponse: {
+        description: "Response when the uploaded file is not a PNG, JPEG or PDF.",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/BadRqSchemas/InvalidFileTypeStatus"
+                }
+            }
+        }
+    },
+    FileTooLargeResponse: {
+        description: "Response when the uploaded file exceeds the 5 MB limit.",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/BadRqSchemas/FileTooLargeStatus"
+                }
+            }
+        }
+    },
+    InvalidDocumentTypeResponse: {
+        description: "Response when the document type is missing, invalid or incompatible with the resource.",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/BadRqSchemas/InvalidDocumentTypeStatus"
+                }
+            }
+        }
+    },
+    DocumentUpdateBadRequestResponse: {
+        description: "Possible 400 errors while updating a resource or uploading a document: invalid ID, missing update data, an unexpected file field, unsupported file type, or an invalid document type.",
+        content: {
+            "application/json": {
+                schema: {
+                    oneOf: [
+                        { $ref: "#/components/BadRqSchemas/InvalidIdStatus" },
+                        { $ref: "#/components/BadRqSchemas/BadRequestStatus" },
+                        { $ref: "#/components/BadRqSchemas/InvalidFileTypeStatus" },
+                        { $ref: "#/components/BadRqSchemas/InvalidDocumentTypeStatus" }
+                    ]
+                }
+            }
+        }
+    },
     DuplicateKeyResponse: {
         description: "Response when creating a resource with a duplicate value",
         content: {

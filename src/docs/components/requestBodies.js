@@ -21,7 +21,7 @@ export const RequestBodies = {
         }
     },
     UpdateUserRequest: {
-        description: "Information required to update a user account. It can be one or several properties.",
+        description: "At least one field must be sent. Use application/json for profile-only updates. To upload a document, use multipart/form-data and send documents together with documentType.",
         required: true,
         content: {
             "application/json": {
@@ -30,7 +30,30 @@ export const RequestBodies = {
                     properties: {
                         first_name: { type: "string", example: "Jane"},
                         last_name: { type: "string", example: "Doe"},
-                        email: { type: "string", example: "janedoe@hotmail.com"}
+                        email: { type: "string", format: "email", example: "janedoe@hotmail.com"},
+                        role: { type: "string", enum: ["user", "admin", "courier"], example: "courier"}
+                    }
+                }
+            },
+            "multipart/form-data": {
+                schema: {
+                    type: "object",
+                    properties: {
+                        first_name: { type: "string", example: "Jane"},
+                        last_name: { type: "string", example: "Doe"},
+                        email: { type: "string", format: "email", example: "janedoe@hotmail.com"},
+                        role: { type: "string", enum: ["user", "admin", "courier"], example: "courier"},
+                        documentType: {
+                            type: "string",
+                            enum: ["id_document", "profile_photo", "courier_license"],
+                            example: "courier_license",
+                            description: "Required when documents is attached. courier_license is accepted only when the effective user role is courier."
+                        },
+                        documents: {
+                            type: "string",
+                            format: "binary",
+                            description: "Optional single file. Accepted formats: PNG, JPEG and PDF. Maximum size: 5 MB. The user can keep a maximum of 3 documents and the original filename cannot be repeated."
+                        }
                     }
                 }
             }
@@ -109,7 +132,7 @@ export const RequestBodies = {
         }
     },
     UpdateOrderRequest: {
-        description: "Information required to update a product. It can be one or several properties.",
+        description: "At least one field must be sent. Use application/json for an items update. To upload a payment receipt, use multipart/form-data and send documents together with documentType.",
         required: true,
         content: {
             "application/json": {
@@ -127,8 +150,29 @@ export const RequestBodies = {
                                 quantity: 1,
                             }
                         ]},
-                        status: { type: "string", example: "pending"},
-                        priority: { type: "string", example: "medium"}
+                        status: { type: "string", enum: ["pending", "payment_validated", "packaged", "dispatched", "cancelled"], example: "pending"},
+                        priority: { type: "string", enum: ["low", "medium", "high"], example: "medium"}
+                    }
+                }
+            },
+            "multipart/form-data": {
+                schema: {
+                    type: "object",
+                    properties: {
+                        user: { type: "string", description: "Existing user ID.", example: "66f1a4c92f8a7d5b4c3e2101"},
+                        status: { type: "string", enum: ["pending", "payment_validated", "packaged", "dispatched", "cancelled"], example: "payment_validated"},
+                        priority: { type: "string", enum: ["low", "medium", "high"], example: "high"},
+                        documentType: {
+                            type: "string",
+                            enum: ["payment_receipt"],
+                            example: "payment_receipt",
+                            description: "Required when documents is attached. Orders only accept payment_receipt."
+                        },
+                        documents: {
+                            type: "string",
+                            format: "binary",
+                            description: "Optional single file. Accepted formats: PNG, JPEG and PDF. Maximum size: 5 MB. The order can keep a maximum of 3 documents and the original filename cannot be repeated."
+                        }
                     }
                 }
             }

@@ -5,8 +5,9 @@ const Parameters = {
         required: true,
         description: "Unique user ID",
         schema: {
-                type: "string"
-        } 
+                type: "string",
+                example: "66f1a4c92f8a7d5b4c3e2101"
+        }
     },
     PidPathParam: {
         name: "pid",
@@ -23,8 +24,9 @@ const Parameters = {
         required: true,
         description: "Unique order ID",
         schema: {
-                type: "string"
-        } 
+                type: "string",
+                example: "66f1a4c92f8a7d5b4c3e2102"
+        }
     },
     DidPathParam: {
         name: "did",

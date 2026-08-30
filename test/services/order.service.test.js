@@ -5,6 +5,14 @@ import OrderService from "../../src/services/order.service.js";
 import UserService from "../../src/services/user.service.js";
 import ProductService from "../../src/services/product.service.js";
 import ProductMocksService from "../../src/mocks/services/product.mocks.service.js";
+import { DOCUMENT_TYPES } from "../../src/constants/constants.js";
+
+const buildFile = (name) => ({
+    originalname: name,
+    filename: `test-${Date.now()}-${name}`,
+    mimetype: "application/pdf",
+    size: 1024
+})
 
 describe("Test unitario sobre Order Service", function(){
     before(async function (){
@@ -160,6 +168,41 @@ describe("Test unitario sobre Order Service", function(){
             } catch(err){
                 expect(err.code).to.equal("BAD_REQUEST")
                 expect(err.statusCode).to.equal(400)
+            }
+        })
+
+        it("[update document]: Por limite de archivos alcanzado", async function(){
+            const mockOrder = await OrderMockService.generateMockOrders(1)
+            const orderWithDocuments = await OrderService.createOneOrder(mockOrder[0])
+
+            try{
+                await OrderService.updateOneOrder(orderWithDocuments._id, {documentType: DOCUMENT_TYPES.PAYMENT_RECEIPT}, buildFile("comprobante-1.pdf"))
+                await OrderService.updateOneOrder(orderWithDocuments._id, {documentType: DOCUMENT_TYPES.PAYMENT_RECEIPT}, buildFile("comprobante-2.pdf"))
+                await OrderService.updateOneOrder(orderWithDocuments._id, {documentType: DOCUMENT_TYPES.PAYMENT_RECEIPT}, buildFile("comprobante-3.pdf"))
+                await OrderService.updateOneOrder(orderWithDocuments._id, {documentType: DOCUMENT_TYPES.PAYMENT_RECEIPT}, buildFile("comprobante-4.pdf"))
+                expect.fail("Se esperaba un error, pero no ocurrio")
+            } catch(err){
+                expect(err.code).to.equal("BAD_REQUEST")
+                expect(err.statusCode).to.equal(400)
+            } finally {
+                await OrderService.deleteOneOrder(orderWithDocuments._id)
+            }
+        })
+
+        it("[update document]: Por archivo duplicado", async function(){
+            const mockOrder = await OrderMockService.generateMockOrders(1)
+            const orderWithDocument = await OrderService.createOneOrder(mockOrder[0])
+            const duplicatedFile = buildFile("comprobante-duplicado.pdf")
+
+            try{
+                await OrderService.updateOneOrder(orderWithDocument._id, {documentType: DOCUMENT_TYPES.PAYMENT_RECEIPT}, duplicatedFile)
+                await OrderService.updateOneOrder(orderWithDocument._id, {documentType: DOCUMENT_TYPES.PAYMENT_RECEIPT}, {...duplicatedFile, filename: `test-${Date.now()}-duplicado.pdf`})
+                expect.fail("Se esperaba un error, pero no ocurrio")
+            } catch(err){
+                expect(err.code).to.equal("DUPLICATE_KEY")
+                expect(err.statusCode).to.equal(409)
+            } finally {
+                await OrderService.deleteOneOrder(orderWithDocument._id)
             }
         })
 

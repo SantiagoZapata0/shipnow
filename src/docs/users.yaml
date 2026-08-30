@@ -67,24 +67,32 @@ paths:
       responses:
         "200":
           $ref: "#/components/GoodResponses/GetUserByIdResponse"
+        "400":
+          $ref: "#/components/BadResponses/InvalidIdResponse"
         "404":
           $ref: "#/components/BadResponses/NotFoundResponse"
 
     put:
       tags:
         - Users
-      summary: Find by ID and update user.
+      summary: Update a user and optionally upload one document.
       parameters:
         - $ref: "#/components/Parameters/UidPathParam"
       requestBody:
         $ref: "#/components/RequestBodies/UpdateUserRequest"
       description: >
-        Finds and returns an updated object based on the modified information.
+        Updates one or more user fields. For a document upload, use multipart/form-data with the documents file field and documentType. Only one file is accepted per request; PNG, JPEG and PDF are allowed up to 5 MB. A user can store up to 3 documents. courier_license is valid only for a courier.
       responses:
         "200":
           $ref: "#/components/GoodResponses/UpdateUserResponse"
         "400":
-          $ref: "#/components/BadResponses/BadRequestResponse"
+          $ref: "#/components/BadResponses/DocumentUpdateBadRequestResponse"
+        "409":
+          $ref: "#/components/BadResponses/DuplicateKeyResponse"
+        "413":
+          $ref: "#/components/BadResponses/FileTooLargeResponse"
+        "422":
+          $ref: "#/components/BadResponses/ValidationErrorResponse"
         "404":
           $ref: "#/components/BadResponses/NotFoundResponse"
 
@@ -99,5 +107,7 @@ paths:
       responses:
         "200":
           $ref: "#/components/GoodResponses/DeletedUserResponse"
+        "400":
+          $ref: "#/components/BadResponses/InvalidIdResponse"
         "404":
           $ref: "#/components/BadResponses/NotFoundResponse"

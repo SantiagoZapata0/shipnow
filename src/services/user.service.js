@@ -104,8 +104,6 @@ class UserService{
 
         const existingUser = await UserRepository.getById(id)
 
-        const effectiveRole = data.role !== undefined ? data.role : existingUser.role;
-
         if(!existingUser){
             throw new CustomError("NOT_FOUND", "El usuario no existe.");
         }
@@ -113,6 +111,8 @@ class UserService{
         if(!data || Object.keys(data).length === 0){
             throw new CustomError("BAD_REQUEST", "Faltan campos obligatorios.");
         }
+
+        const effectiveRole = data.role !== undefined ? data.role : existingUser.role;
 
         if(files){
              if(effectiveRole === USER_ROLES.COURIER && !files){
@@ -140,25 +140,14 @@ class UserService{
             }
 
             existingUser.documents.push({
-                originalName: files.originalname,
-                generatedName: files.filename,
-                path: `src/uploads/documents/${files.filename}`,
-                type: files.mimetype,
-                size: files.size,
-                documentType: data.documentType,
-                uploadedAt: new Date()
-            })
-            
-            await existingUser.save()
-
-                return {
-                    _id: existingUser._id,
-                    first_name: existingUser.first_name,
-                    last_name: existingUser.last_name,
-                    email: existingUser.email,
-                    role: existingUser.role,
-                    documents: existingUser.documents
-                }
+                    originalName: files.originalname,
+                    generatedName: files.filename,
+                    path: `src/uploads/documents/${files.filename}`,
+                    type: files.mimetype,
+                    size: files.size,
+                    documentType: data.documentType,
+                    uploadedAt: new Date()
+                })
             }
 
             Object.assign(existingUser, data);
@@ -170,7 +159,8 @@ class UserService{
                 last_name: existingUser.last_name,
                 email: existingUser.email,
                 role: existingUser.role,
-                documents: existingUser.documents
+                documents: existingUser.documents,
+                uploadedDocumentType: files ? data.documentType : null
             }
         }   
 

@@ -2,6 +2,27 @@ import { expect } from "chai";
 import { connectDbSv, disconnectDbSv } from "../../src/utils/test.utils.js";
 import UserMockService from "../../src/mocks/services/user.mocks.service.js";
 import UserService from "../../src/services/user.service.js";
+import { DOCUMENT_TYPES, USER_ROLES } from "../../src/constants/constants.js";
+import fs from "fs";
+import path from "path";
+
+const buildFile = (name) => {
+    const filename = `test-${Date.now()}-${name}`
+
+    return {
+        originalname: name,
+        filename,
+        path: path.join(process.cwd(), "src", "uploads", "documents", filename),
+        mimetype: "application/pdf",
+        size: 1024
+    }
+}
+
+const createTempFile = (file) => {
+    fs.mkdirSync(path.dirname(file.path), { recursive: true })
+    fs.writeFileSync(file.path, "archivo de test")
+    return file
+}
 
 describe("Test unitario de User Service", function(){
     
@@ -139,6 +160,65 @@ describe("Test unitario de User Service", function(){
             } catch(err){
                 expect(err.code).to.equal("BAD_REQUEST")
                 expect(err.statusCode).to.equal(400)
+            }
+        })
+
+        it("[update document]: Por tipo de documento faltante o invalido", async function(){
+            const file = createTempFile(buildFile("documento-sin-tipo.pdf"))
+
+            try{
+                await UserService.updateOneUser(this.testUser._id, {first_name: "Santiago"}, file)
+                expect.fail("Se esperaba un error, pero no ocurrio")
+            } catch(err){
+                expect(err.code).to.equal("INVALID_DOCUMENT_TYPE")
+                expect(err.statusCode).to.equal(400)
+            }
+        })
+
+        it("[update document]: Por licencia cargada en usuario que no es repartidor", async function(){
+            const file = createTempFile(buildFile("licencia-no-courier.pdf"))
+
+            try{
+                await UserService.updateOneUser(this.testUser._id, {role: USER_ROLES.USER, documentType: DOCUMENT_TYPES.COURIER_LICENSE}, file)
+                expect.fail("Se esperaba un error, pero no ocurrio")
+            } catch(err){
+                expect(err.code).to.equal("INVALID_DOCUMENT_TYPE")
+                expect(err.statusCode).to.equal(400)
+            }
+        })
+
+        it("[update document]: Por limite de archivos alcanzado", async function(){
+            const mockUser = await UserMockService.generateMockUsers(1)
+            const userWithDocuments = await UserService.createOneUser(mockUser[0])
+
+            try{
+                await UserService.updateOneUser(userWithDocuments._id, {documentType: DOCUMENT_TYPES.ID_DOCUMENT}, buildFile("documento-1.pdf"))
+                await UserService.updateOneUser(userWithDocuments._id, {documentType: DOCUMENT_TYPES.ID_DOCUMENT}, buildFile("documento-2.pdf"))
+                await UserService.updateOneUser(userWithDocuments._id, {documentType: DOCUMENT_TYPES.ID_DOCUMENT}, buildFile("documento-3.pdf"))
+                await UserService.updateOneUser(userWithDocuments._id, {documentType: DOCUMENT_TYPES.ID_DOCUMENT}, buildFile("documento-4.pdf"))
+                expect.fail("Se esperaba un error, pero no ocurrio")
+            } catch(err){
+                expect(err.code).to.equal("BAD_REQUEST")
+                expect(err.statusCode).to.equal(400)
+            } finally {
+                await UserService.deleteOneUser(userWithDocuments._id)
+            }
+        })
+
+        it("[update document]: Por archivo duplicado", async function(){
+            const mockUser = await UserMockService.generateMockUsers(1)
+            const userWithDocument = await UserService.createOneUser(mockUser[0])
+            const duplicatedFile = buildFile("documento-duplicado.pdf")
+
+            try{
+                await UserService.updateOneUser(userWithDocument._id, {documentType: DOCUMENT_TYPES.ID_DOCUMENT}, duplicatedFile)
+                await UserService.updateOneUser(userWithDocument._id, {documentType: DOCUMENT_TYPES.ID_DOCUMENT}, createTempFile({...duplicatedFile, filename: `test-${Date.now()}-duplicado.pdf`}))
+                expect.fail("Se esperaba un error, pero no ocurrio")
+            } catch(err){
+                expect(err.code).to.equal("DUPLICATE_KEY")
+                expect(err.statusCode).to.equal(409)
+            } finally {
+                await UserService.deleteOneUser(userWithDocument._id)
             }
         })
 

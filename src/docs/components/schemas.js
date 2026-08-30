@@ -110,6 +110,18 @@ export const GoodRqSchemas = {
             }}
         }
     },
+    DocumentMetadata: {
+        type: "object",
+        properties: {
+            originalName: { type: "string", example: "driver-license.pdf" },
+            generatedName: { type: "string", example: "document-1726742400000-driver-license.pdf" },
+            path: { type: "string", example: "src/uploads/documents/document-1726742400000-driver-license.pdf" },
+            type: { type: "string", example: "application/pdf" },
+            size: { type: "number", example: 245760 },
+            documentType: { type: "string", example: "courier_license" },
+            uploadedAt: { type: "string", format: "date-time", example: "2026-08-30T12:00:00.000Z" }
+        }
+    },
     UpdateUserStatus: {
         type: "object",
         properties: {
@@ -119,7 +131,17 @@ export const GoodRqSchemas = {
                 first_name: "Jane",
                 last_name: "Doe",
                 email: "janedoe@hotmail.com",
-                role: "user"
+                role: "courier",
+                documents: [{
+                    originalName: "driver-license.pdf",
+                    generatedName: "document-1726742400000-driver-license.pdf",
+                    path: "src/uploads/documents/document-1726742400000-driver-license.pdf",
+                    type: "application/pdf",
+                    size: 245760,
+                    documentType: "courier_license",
+                    uploadedAt: "2026-08-30T12:00:00.000Z"
+                }],
+                uploadedDocumentType: "courier_license"
             }}
         }
     },
@@ -400,6 +422,16 @@ export const GoodRqSchemas = {
                     total: 63000,
                     status: "payment_validated",
                     priority: "high",
+                    documents: [{
+                        originalName: "payment-receipt.pdf",
+                        generatedName: "receipt-1726742400000-payment-receipt.pdf",
+                        path: "src/uploads/documents/receipt-1726742400000-payment-receipt.pdf",
+                        type: "application/pdf",
+                        size: 245760,
+                        documentType: "payment_receipt",
+                        uploadedAt: "2026-08-30T12:00:00.000Z"
+                    }],
+                    uploadedDocumentType: "payment_receipt",
                     createdAt: "2027-01-01T00:00:00.000Z",
                     updatedAt: "2027-01-01T00:00:00.000Z",
                     __v: 0
@@ -793,6 +825,33 @@ export const BadRqSchemas = {
            status: { type: "string", example: "Error"},
            error: { type: "string", example: "INVALID_ID"},
            message: { type: "string", example: "Invalid resource ID"} 
+        }
+    },
+
+    InvalidFileTypeStatus: {
+        type: "object",
+        properties: {
+           status: { type: "string", example: "Error"},
+           error: { type: "string", example: "INVALID_FILE_TYPE"},
+           message: { type: "string", example: "Invalid file type"}
+        }
+    },
+
+    FileTooLargeStatus: {
+        type: "object",
+        properties: {
+           status: { type: "string", example: "Error"},
+           error: { type: "string", example: "FILE_TOO_LARGE"},
+           message: { type: "string", example: "El archivo supera el tamano maximo permitido"}
+        }
+    },
+
+    InvalidDocumentTypeStatus: {
+        type: "object",
+        properties: {
+           status: { type: "string", example: "Error"},
+           error: { type: "string", example: "INVALID_DOCUMENT_TYPE"},
+           message: { type: "string", example: "Debe insertar un tipo de documento valido"}
         }
     },
 

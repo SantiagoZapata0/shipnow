@@ -33,21 +33,29 @@ paths:
       responses:
         "200":
           $ref: "#/components/GoodResponses/GetOrderByIdResponse"
+        "400":
+          $ref: "#/components/BadResponses/InvalidIdResponse"
         "404":
           $ref: "#/components/BadResponses/NotFoundResponse"
     put:
       tags:
         - Orders
-      summary: Find by ID and update an order
+      summary: Update an order and optionally upload one payment receipt
       parameters:
         - $ref: "#/components/Parameters/OidPathParam"
       requestBody:
-          $ref: "#/components/RequestBodies/UpdateOrderRequest"
+        $ref: "#/components/RequestBodies/UpdateOrderRequest"
+      description: >
+        Updates one or more order fields. For a receipt upload, use multipart/form-data with the documents file field and documentType: payment_receipt. Only one file is accepted per request; PNG, JPEG and PDF are allowed up to 5 MB. An order can store up to 3 documents.
       responses:
         "200":
           $ref: "#/components/GoodResponses/UpdateOrderResponse"
         "400":
-          $ref: "#/components/BadResponses/BadRequestResponse"
+          $ref: "#/components/BadResponses/DocumentUpdateBadRequestResponse"
+        "409":
+          $ref: "#/components/BadResponses/DuplicateKeyResponse"
+        "413":
+          $ref: "#/components/BadResponses/FileTooLargeResponse"
         "404":
           $ref: "#/components/BadResponses/NotFoundResponse"
         "422":
@@ -61,5 +69,7 @@ paths:
       responses:
         "200":
           $ref: "#/components/GoodResponses/DeleteOrderResponse"
+        "400":
+          $ref: "#/components/BadResponses/InvalidIdResponse"
         "404":
           $ref: "#/components/BadResponses/NotFoundResponse"

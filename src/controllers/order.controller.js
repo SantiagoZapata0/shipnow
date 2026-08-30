@@ -37,10 +37,11 @@ class OrderController {
         try {
             const order = await OrderService.updateOneOrder(req.params.oid, req.body, req.file);
             logger.info(`Orden actualizada. ID: ${req.params.oid}`);
-            if(req.file && req.body.documentType === DOCUMENT_TYPES.PAYMENT_RECEIPT){
-                logger.info(`Comprobante de pago cargado. Archivo: ${req.file.filename}`)
-                return res.status(200).json({statusCode: 200, message: "Orden actualizada", payload: order})
+
+            if(req.file && order.uploadedDocumentType){
+                logger.info(`Documento cargado (${order.uploadedDocumentType}). Archivo: ${req.file.filename}, Orden: ${order._id}`);
             }
+
             return res.status(200).json({ statusCode: 200, message: "Orden actualizada", payload: order });
         } catch (err) {
             next(err);

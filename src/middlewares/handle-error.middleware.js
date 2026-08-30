@@ -11,15 +11,13 @@ export function errorHandler(err, req, res, next){
 
     if(isCustomError){
         logger.warn(`Custom error: ${err.message}`)
-        if(req.file){
-            fs.unlinkSync(req.file.path)
-        }
     } else{
         logger.error(`Unexpected error: ${err.message}`)
-        if(req.file){
+    }
+
+    if(req.file){
             fs.unlinkSync(req.file.path)
         }
-    }
 
     res.status(statusCode).json({status: "Error", error: code, message: message})
 }
