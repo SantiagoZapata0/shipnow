@@ -5,8 +5,8 @@ import { DOCUMENT_TYPES } from "../constants/constants.js"
 class OrderController {
     static async getOrders(req, res, next) {
         try {
-            const orders = await OrderService.getAllOrders();
-            logger.info(`Órdenes encontradas. Cantidad encontrada: ${orders.length}`);
+            const orders = await OrderService.getAllOrders(parseInt(req.query.page) || 1);
+            logger.info(`Órdenes encontradas. Cantidad encontrada: ${orders.orders.length}, Pagina: ${req.query.page}`);
             return res.status(200).json({ statusCode: 200, message: "Órdenes encontradas.", payload: orders });
         } catch (err) {
             next(err);

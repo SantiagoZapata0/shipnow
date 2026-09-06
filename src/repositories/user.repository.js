@@ -2,8 +2,12 @@ import UserModel from "../models/user.model.js";
 
 class UserRepository{
 
-    static async getFor(filter){
-        return await UserModel.find(filter)
+    static async getFor(filter, skip, limit){
+        return await UserModel.find(filter).skip(skip).limit(limit);
+    }
+
+    static async countUsers(filters){
+        return await UserModel.countDocuments(filters);
     }
 
     static async getByEmail(email){

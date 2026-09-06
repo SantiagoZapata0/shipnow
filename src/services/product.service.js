@@ -3,19 +3,25 @@ import CustomError from "../errors/custom-error.js";
 import { PRODUCT_STATUS } from "../constants/constants.js";
 
 class ProductService{
-    static async getAllProducts(){
-        const allProducts = await ProductRepository.findProducts({});
+    static async getAllProducts(page = 1){
+        const page_size = 10
 
-        return allProducts.map((prod) => ({
-            title: prod.title,
-            description: prod.description,
-            code: prod.code,
-            price: prod.price,
-            stock: prod.stock,
-            category: prod.category,
-            status: prod.status,
-            thumbnails: prod.thumbnails
-        }))
+        const allProducts = await ProductRepository.findProducts({}, (page - 1) * page_size, page_size);
+        const totalProducts = await ProductRepository.countProducts();
+        const totalPages = Math.ceil(totalProducts / page_size)
+
+        if(page > totalPages){
+            throw new CustomError("BAD_REQUEST", "No hay mas paginas disponibles")
+        }
+
+        return {
+            products: allProducts,
+            page,
+            totalPages,
+            totalProducts,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1
+        }
     }
 
     static async getAvailableProds(){

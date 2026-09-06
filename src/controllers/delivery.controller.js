@@ -4,8 +4,8 @@ import DeliveryService from "../services/delivery.service.js";
 class DeliveryController {
     static async getDeliveries(req, res, next) {
         try {
-            const deliveries = await DeliveryService.getAllDeliveries();
-            logger.info(`Entregas encontradas. Cantidad encontrada: ${deliveries.length}`);
+            const deliveries = await DeliveryService.getAllDeliveries(parseInt(req.query.page) || 1);
+            logger.info(`Entregas encontradas. Cantidad encontrada: ${deliveries.deliveries.length}, Pagina: ${req.query.page}`);
             return res.status(200).json({ statusCode: 200, message: "Entregas encontradas.", payload: deliveries });
         } catch (err) {
             next(err);

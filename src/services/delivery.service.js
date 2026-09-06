@@ -5,8 +5,26 @@ import OrderRepository from "../repositories/order.repository.js";
 import UserRepository from "../repositories/user.repository.js";
 
 class DeliveryService {
-    static async getAllDeliveries() {
-        return await DeliveryRepository.getAll();
+    static async getAllDeliveries(page = 1) {
+
+        const page_size = 10
+
+        const deliveries = await DeliveryRepository.getAll((page - 1) * page_size, page_size);
+        const totalDocs = await DeliveryRepository.countDeliveries();
+        const totalPages = Math.ceil(totalDocs / page_size)
+
+        if(page > totalPages){
+            throw new CustomError("BAD_REQUEST", "No hay mas paginas disponibles")
+        }
+
+        return {
+            deliveries: deliveries,
+            page,
+            totalPages,
+            totalDocs,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1
+        }
     }
 
     static async getDeliveryById(deliveryId) {

@@ -5,8 +5,25 @@ import ProductRepository from "../repositories/products.repository.js";
 import UserRepository from "../repositories/user.repository.js";
 
 class OrderService {
-    static async getAllOrders() {
-        return await OrderRepository.getAll();
+    static async getAllOrders(page = 1) {
+        const page_size = 5;
+
+        const orders = await OrderRepository.getAll((page - 1) * page_size, page_size)
+        const totalOrders = await OrderRepository.countOrders();
+        const totalPages = Math.ceil(totalOrders / page_size);
+
+        if(page > totalPages){
+            throw new CustomError("BAD_REQUEST", "No hay mas paginas disponibles")
+        }
+
+        return {
+            orders: orders,
+            page,
+            totalPages,
+            totalOrders,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1
+        };
     }
 
     static async getOrderById(orderId) {

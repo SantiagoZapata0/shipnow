@@ -1,8 +1,12 @@
 import ProductModel from "../models/product.model.js"
 
 class ProductRepository{
-    static async findProducts(filters){
-        return await ProductModel.find(filters)
+    static async findProducts(filters, skip, limit){
+        return await ProductModel.find(filters).skip(skip).limit(limit);
+    }
+
+    static async countProducts(){
+        return await ProductModel.countDocuments();
     }
 
     static async findProductById(prodId){

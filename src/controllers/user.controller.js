@@ -5,8 +5,8 @@ import { DOCUMENT_TYPES } from "../constants/constants.js";
 class UserController {
     static async getUsers(req, res, next){
         try{
-            const users = await UserService.getAll();
-            logger.info(`Usuarios encontrados. Cantidad encontrada: ${users.length}`);
+            const users = await UserService.getAll(parseInt(req.query.page) || 1);
+            logger.info(`Usuarios encontrados. Cantidad encontrada: ${users.users.length}. Pagina: ${req.query.page}`);
             return res.status(200).json({statusCode: 200, message: "Usuarios encontrados.", payload: users})
         } catch(err){
             next(err)
@@ -21,7 +21,6 @@ class UserController {
             return res.status(200).json({statusCode: 200, message: `Usuarios encontrados con rol: ${role}.`, payload: users})
         } catch(err){
             next(err)
-            
         }
     }
 

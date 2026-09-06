@@ -5,16 +5,26 @@ import { USER_ROLES } from "../constants/constants.js";
 import { DOCUMENT_TYPES } from "../constants/constants.js";
 
 class UserService{
-    static async getAll(){
-        const users = await UserRepository.getFor({});
-        return users.map((users) => ({
-            id: users._id,
-            first_name: users.first_name,
-            last_name: users.last_name,
-            email: users.email,
-            role: users.role
-        }))
-    }
+    static async getAll(page = 1){
+        const page_size = 10
+
+        const users = await UserRepository.getFor({}, (page - 1) * page_size, page_size)
+        const totalDocs = await UserRepository.countUsers({})
+        const totalPages = Math.ceil(totalDocs / page_size)
+
+        if(page > totalPages){
+            throw new CustomError("BAD_REQUEST", "No hay mas paginas disponibles")
+        }
+
+        return {
+                users: users,
+                page,
+                totalPages,
+                totalDocs,
+                hasNextPage: page < totalPages,
+                hasPrevPage: page > 1
+          }
+        }
 
     static async getByRole(role){
 
