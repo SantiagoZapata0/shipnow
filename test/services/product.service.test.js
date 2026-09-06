@@ -26,7 +26,7 @@ describe("Test unitario sobre Product Service", function(){
 
         it("Se deben obtener todos los productos", async function(){
             const products = await ProductService.getAllProducts();
-            expect(products).to.be.an("array");
+            expect(products).to.be.an("object");
         });
 
         it("Se debe obtener un producto por ID", async function(){

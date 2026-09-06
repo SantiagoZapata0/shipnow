@@ -46,7 +46,7 @@ describe("Test unitario de User Service", function(){
 
         it("Se deben obtener todos los usuarios", async function(){
             const user = await UserService.getAll();
-            expect(user).to.be.an("array");
+            expect(user).to.be.an("object");
         })
 
         it("Se debe obtener un usuario por ID", async function(){

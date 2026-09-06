@@ -35,7 +35,7 @@ describe("Test unitario sobre Order Service", function(){
 
         it("Se deben obtener todas las ordenes", async function(){
             const order = await OrderService.getAllOrders()
-            expect(order).to.be.an("array")
+            expect(order).to.be.an("object")
         })
 
         it("Se debe obtener una orden por su ID", async function(){

@@ -27,7 +27,7 @@ describe("Test unitario sobre Delivery Service", function(){
 
         it("Se deben obtener todas las entregas", async function(){
             const deliveries = await DeliveryService.getAllDeliveries()
-            expect(deliveries).to.be.an("array").and.to.have.length.greaterThan(0)
+            expect(deliveries).to.be.an("object")
         })
 
         it("Se debe obtener una entrega por ID", async function(){

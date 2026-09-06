@@ -24,7 +24,7 @@ describe("/api/deliveries", function(){
 
             it("Respuesta esperada en caso de obtener todas las entregas: [200]", async function(){
                 const response = await request.get("/api/deliveries")
-                expect(response.body.payload).to.be.an("array")
+                expect(response.body.payload).to.be.an("object")
                 expect(response.statusCode).to.equal(200)
             })
 

@@ -50,6 +50,44 @@ pnpm run dev
 
 El servidor queda disponible en `http://localhost:<PORT>`.
 
+## Docker: build y ejecución
+
+La imagen utiliza el `dockerfile` incluido en la raíz y expone el puerto `3000`. Primero, construir la imagen desde la raíz del proyecto:
+
+```bash
+docker build -t shipnow-api -f dockerfile .
+```
+
+Para iniciar un contenedor, publicar el puerto y enviar las variables de entorno requeridas. Reemplazar los valores de ejemplo de MongoDB y del secreto por los correspondientes al entorno que se va a usar:
+
+```bash
+docker run --name shipnow-api -p 3000:3000 \
+  -e PORT=3000 \
+  -e NODE_ENV=production \
+  -e MONGO_KEY="mongodb+srv://usuario:password@cluster.mongodb.net/shipnow" \
+  -e JWT_SECRET="un-secreto-largo-y-privado" \
+  -d shipnow-api
+```
+
+El mapeo `-p 3000:3000` conecta el puerto `3000` de la máquina anfitriona con el `PORT=3000` dentro del contenedor. La URI de `MONGO_KEY` debe ser accesible desde el contenedor; si se usa MongoDB local en la misma máquina, no se debe usar `localhost` como host de la URI, sino un nombre o dirección alcanzable desde Docker.
+
+Como alternativa, se pueden cargar las variables desde un archivo. Crear un archivo, por ejemplo `.env.docker`, con estos valores:
+
+```env
+PORT=3000
+NODE_ENV=production
+MONGO_KEY=mongodb+srv://usuario:password@cluster.mongodb.net/shipnow
+JWT_SECRET=un-secreto-largo-y-privado
+```
+
+Luego ejecutar:
+
+```bash
+docker run --name shipnow-api -p 3000:3000 --env-file .env.docker -d shipnow-api
+```
+
+`MONGO_KEY_TEST` solo es necesaria al ejecutar la suite de pruebas con `NODE_ENV=test`; no se requiere para el contenedor de la aplicación en producción. Para verificar que el contenedor está en ejecución, consultar `http://localhost:3000/api/health`.
+
 ## Documentación Swagger
 
 Con el servidor en ejecución, la documentación interactiva está disponible en:
