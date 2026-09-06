@@ -4,9 +4,13 @@ paths:
       tags:
         - Deliveries
       summary: Get all deliveries
+      parameters:
+        - $ref: "#/components/Parameters/PageQueryParam"
       responses:
         "200":
           $ref: "#/components/GoodResponses/GetAllDeliveriesResponse"
+        "400":
+          $ref: "#/components/BadResponses/BadRequestResponse"
     post:
       tags:
         - Deliveries

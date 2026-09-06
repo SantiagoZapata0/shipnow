@@ -116,7 +116,7 @@ export const GoodResponses = {
     //* Product endpoints responses
 
     GetAllProductsResponse: {
-        description: "Response for get all users endpoint",
+        description: "Response for get all products endpoint",
         content: {
             "application/json": {
                 schema: {

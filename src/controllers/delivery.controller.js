@@ -5,7 +5,7 @@ class DeliveryController {
     static async getDeliveries(req, res, next) {
         try {
             const deliveries = await DeliveryService.getAllDeliveries(parseInt(req.query.page) || 1);
-            logger.info(`Entregas encontradas. Cantidad encontrada: ${deliveries.deliveries.length}, Pagina: ${req.query.page}`);
+            logger.info(`Entregas encontradas. Cantidad encontrada: ${deliveries.deliveries.length}, Pagina: ${req.query.page || 1}`);
             return res.status(200).json({ statusCode: 200, message: "Entregas encontradas.", payload: deliveries });
         } catch (err) {
             next(err);

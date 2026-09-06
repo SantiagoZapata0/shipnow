@@ -10,8 +10,8 @@ class DeliveryService {
         const page_size = 10
 
         const deliveries = await DeliveryRepository.getAll((page - 1) * page_size, page_size);
-        const totalDocs = await DeliveryRepository.countDeliveries();
-        const totalPages = Math.ceil(totalDocs / page_size)
+        const totalDeliveries = await DeliveryRepository.countDeliveries();
+        const totalPages = Math.ceil(totalDeliveries / page_size)
 
         if(page > totalPages){
             throw new CustomError("BAD_REQUEST", "No hay mas paginas disponibles")
@@ -21,7 +21,7 @@ class DeliveryService {
             deliveries: deliveries,
             page,
             totalPages,
-            totalDocs,
+            totalDeliveries,
             hasNextPage: page < totalPages,
             hasPrevPage: page > 1
         }

@@ -4,10 +4,13 @@ paths:
       tags:
         - Users
       summary: Get all users
-      description: Returns a list of all users.
+      parameters:
+        - $ref: "#/components/Parameters/PageQueryParam"
       responses:
-            "200":
-              $ref: "#/components/GoodResponses/GetAllUsersResponse"
+        "200":
+          $ref: "#/components/GoodResponses/GetAllUsersResponse"
+        "400":
+          $ref: "#/components/BadResponses/BadRequestResponse"
     post:
       tags:
         - Users

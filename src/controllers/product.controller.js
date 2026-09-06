@@ -5,7 +5,7 @@ class ProductController{
     static async getProducts(req, res, next){
         try{
             const products = await ProductService.getAllProducts(parseInt(req.query.page) || 1);
-            logger.info(`Productos encontrados. Cantidad encontrada: ${products.products.length}, Pagina: ${req.query.page}`);
+            logger.info(`Productos encontrados. Cantidad encontrada: ${products.products.length}, Pagina: ${req.query.page || 1}`);
             return res.status(200).json({statusCode: 200, message: "Productos encontrados.", payload: products})
         } catch(err){
             next(err)

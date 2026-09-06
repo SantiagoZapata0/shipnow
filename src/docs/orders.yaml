@@ -4,9 +4,13 @@ paths:
       tags:
         - Orders
       summary: Get all orders
+      parameters:
+        - $ref: "#/components/Parameters/PageQueryParam"
       responses:
         "200":
           $ref: "#/components/GoodResponses/GetAllOrdersResponse"
+        "400":
+          $ref: "#/components/BadResponses/BadRequestResponse"
     post:
       tags:
         - Orders

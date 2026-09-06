@@ -63,6 +63,14 @@ const Parameters = {
         schema:{
             type: "number"
         }
+    },
+    PageQueryParam:{
+        name: "page",
+        in: "query",
+        description: "Number of page",
+        schema: {
+            type: "number"
+        }
     }
 }
 

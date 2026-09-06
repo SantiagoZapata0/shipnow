@@ -4,9 +4,13 @@ paths:
       tags:
         - Products
       summary: Get all products
+      parameters:
+        - $ref: "#/components/Parameters/PageQueryParam"
       responses:
         "200":
           $ref: "#/components/GoodResponses/GetAllProductsResponse"
+        "400":
+          $ref: "#/components/BadResponses/BadRequestResponse"
 
     post:
       tags:

@@ -6,7 +6,7 @@ class UserController {
     static async getUsers(req, res, next){
         try{
             const users = await UserService.getAll(parseInt(req.query.page) || 1);
-            logger.info(`Usuarios encontrados. Cantidad encontrada: ${users.users.length}. Pagina: ${req.query.page}`);
+            logger.info(`Usuarios encontrados. Cantidad encontrada: ${users.users.length}. Pagina: ${req.query.page || 1}`);
             return res.status(200).json({statusCode: 200, message: "Usuarios encontrados.", payload: users})
         } catch(err){
             next(err)
