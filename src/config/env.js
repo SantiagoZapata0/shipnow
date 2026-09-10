@@ -1,25 +1,21 @@
 import dotenv from "dotenv";
-import customError from "../errors/custom-error.js";
 
 dotenv.config();
 
 export const env = {
     MONGO_KEY: process.env.MONGO_KEY,
-    PORT: process.env.PORT,
-    NODE_ENV: process.env.NODE_ENV,
-    JWT_SECRET: process.env.JWT_SECRET
+    PORT: process.env.PORT ?? 3000,
+    NODE_ENV: process.env.NODE_ENV ?? "development",
+    JWT_SECRET: process.env.JWT_SECRET,
+    MONGO_KEY_TEST: process.env.MONGO_KEY_TEST
 }
 
-const env_vars = Object.keys(env)
-
-for (const env_var of env_vars) {
-    if (!env[env_var]) {
-        throw new customError("INTERNAL_SERVER_ERROR", `La variable de entorno ${env_var} no está definida.`);
-    }
+if (env.NODE_ENV === "test" && !env.MONGO_KEY_TEST) {
+  throw new Error("Missing required environment variable: MONGO_KEY_TEST");
 }
 
-if(env.NODE_ENV === "test" && !process.env.MONGO_KEY_TEST){
-    throw new Error("Missing required environment variable: MONGO_KEY_TEST");
+if (env.NODE_ENV !== "test" && !env.MONGO_KEY) {
+  throw new Error("Missing required environment variable: MONGO_KEY");
 }
 
 export function getDbUri(){
