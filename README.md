@@ -52,10 +52,12 @@ El servidor queda disponible en `http://localhost:<PORT>`.
 
 ## Docker: build y ejecución
 
-La imagen utiliza el `dockerfile` incluido en la raíz y expone el puerto `3000`. Primero, construir la imagen desde la raíz del proyecto:
+### Contenedor de la API con una base externa
+
+La imagen utiliza el `Dockerfile` incluido en la raíz y expone el puerto `3000`. Primero, construir la imagen desde la raíz del proyecto:
 
 ```bash
-docker build -t shipnow-api -f dockerfile .
+docker build -t shipnow-api -f Dockerfile .
 ```
 
 Para iniciar un contenedor, publicar el puerto y enviar las variables de entorno requeridas. Reemplazar los valores de ejemplo de MongoDB y del secreto por los correspondientes al entorno que se va a usar:
@@ -87,6 +89,48 @@ docker run --name shipnow-api -p 3000:3000 --env-file .env.docker -d shipnow-api
 ```
 
 `MONGO_KEY_TEST` solo es necesaria al ejecutar la suite de pruebas con `NODE_ENV=test`; no se requiere para el contenedor de la aplicación en producción. Para verificar que el contenedor está en ejecución, consultar `http://localhost:3000/api/health`.
+
+### Docker Compose: API y MongoDB
+
+Se necesita Docker con Docker Compose disponible y el motor de Docker en ejecución (por ejemplo, Docker Desktop iniciado). El puerto `3000` de la computadora debe estar libre; si el contenedor del ejemplo anterior sigue ejecutándose, detenerlo antes de continuar.
+
+El archivo `docker-compose.yml` de la raíz define dos servicios:
+
+- `api`: construye la imagen desde el `Dockerfile`, publica el puerto `3000` y configura `NODE_ENV=production`, `PORT=3000` y `MONGO_KEY=mongodb://mongo:27017/shipnow`.
+- `mongo`: utiliza la imagen `mongo:8` y guarda los datos en el volumen `mongo_data`.
+
+Esta opción no requiere preparar un archivo `.env`, instalar Node.js o pnpm en la computadora ni configurar Atlas. La API se conecta a la base `shipnow` del servicio `mongo` mediante la red interna de Compose. Es una base independiente de Atlas: sus datos no se copian ni se sincronizan. Las variables del Compose se aplican al contenedor y no modifican el `.env` usado para el desarrollo habitual.
+
+Desde la raíz del proyecto, construir e iniciar ambos servicios en segundo plano:
+
+```bash
+docker compose up --build -d
+```
+
+MongoDB tiene un `healthcheck` que ejecuta un `ping` mediante `mongosh`. La condición `service_healthy` de `depends_on` hace que Compose espere a que MongoDB responda correctamente antes de iniciar la API.
+
+Para consultar el estado y seguir los logs:
+
+```bash
+docker compose ps
+docker compose logs -f api mongo
+```
+
+`Ctrl+C` termina el seguimiento de logs; los contenedores siguen ejecutándose. Una vez iniciada la API, se puede consultar [el endpoint de salud](http://localhost:3000/api/health) y [Swagger UI](http://localhost:3000/api/docs). Las rutas de mocks no están habilitadas porque este Compose usa `NODE_ENV=production`.
+
+MongoDB no publica el puerto `27017` hacia la computadora: la API lo alcanza internamente con el nombre `mongo`. La URI configurada corresponde a esta instancia sin autenticación y no contiene credenciales de Atlas.
+
+Para detener y eliminar los contenedores y la red, conservando los datos de MongoDB:
+
+```bash
+docker compose down
+```
+
+Al ejecutar nuevamente `docker compose up --build -d`, se reutiliza el volumen existente. Para eliminar también el volumen y empezar con una base vacía, usar el siguiente comando **solo si se desea borrar los datos de MongoDB de este Compose**:
+
+```bash
+docker compose down -v
+```
 
 ## Documentación Swagger
 
