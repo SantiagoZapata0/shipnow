@@ -36,19 +36,23 @@ app.use((req, res, next) => {
 })
 
 app.get("/api/health", (req, res) => {
-    res.status(200).json({status: "OK", payload: "Servidor activo.", process: process.pid})
-    logger.info("Servidor activo. Health check OK.")
-})
+  const databaseConnected = mongoose.connection.readyState === 1;
 
-app.get("/block", (req, res) => {
-    let resultado = 0;
+  if (!databaseConnected) {
+    return res.status(503).json({
+      status: "Error",
+      message: "Servicio no disponible",
+      database: "disconnected"
+    });
+  }
 
-    for(let i = 0; i < 4000000000; i++){
-        resultado += 1
-    }
-
-    res.json({resultado, process: process.pid})
-})
+  return res.status(200).json({
+    status: "OK",
+    message: "Servidor activo",
+    database: "connected",
+    process: process.pid
+  });
+});
 
 app.get("/logger-test", (req, res) => {
     logger.debug("Debug log");

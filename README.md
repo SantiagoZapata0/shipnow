@@ -20,6 +20,8 @@ API REST para administrar la operación de una logística de distribución: usua
 - Swagger (`swagger-jsdoc` y `swagger-ui-express`).
 - Winston y `winston-daily-rotate-file` para logs.
 - Faker para la generación de datos de prueba.
+- Multer para carga de archivos.
+- Mocha, Chai y Supertest para testing automatizado.
 - pnpm como gestor de dependencias.
 
 ## Requisitos e instalación
@@ -39,16 +41,23 @@ PORT=3000
 MONGO_KEY=mongodb+srv://<usuario>:<password>@<cluster>/<base-de-datos>
 MONGO_KEY_TEST=mongodb+srv://<usuario>:<password>@<cluster>/<base-de-datos-de-prueba>
 NODE_ENV=development
-JWT_SECRET=<secreto>
 ```
 
-La aplicación valida `PORT`, `MONGO_KEY`, `NODE_ENV` y `JWT_SECRET` antes de iniciar. Al ejecutar pruebas, también requiere `MONGO_KEY_TEST`. `MONGO_KEY` se usa fuera de pruebas y `MONGO_KEY_TEST` es la URI exclusiva de la suite; deben apuntar a bases de datos diferentes. Luego ejecutar:
+Al ejecutar pruebas, se requiere `MONGO_KEY_TEST`. `MONGO_KEY` se usa fuera de pruebas y `MONGO_KEY_TEST` es la URI exclusiva de la suite; deben apuntar a bases de datos diferentes.
+
+Para iniciar la API normalmente, ejecutar:
+
+```bash
+pnpm start
+```
+
+Para desarrollo, ejecutar el siguiente comando; reinicia el servidor al detectar cambios:
 
 ```bash
 pnpm run dev
 ```
 
-El servidor queda disponible en `http://localhost:<PORT>`.
+Ambos comandos dejan el servidor disponible en `http://localhost:<PORT>`. `pnpm start` ejecuta `node ./src/server.js` sin modo observación y es el indicado para ejecución normal, producción y contenedores.
 
 ## Docker: build y ejecución
 
@@ -67,7 +76,6 @@ docker run --name shipnow-api -p 3000:3000 \
   -e PORT=3000 \
   -e NODE_ENV=production \
   -e MONGO_KEY="mongodb+srv://usuario:password@cluster.mongodb.net/shipnow" \
-  -e JWT_SECRET="un-secreto-largo-y-privado" \
   -d shipnow-api
 ```
 
@@ -79,7 +87,6 @@ Como alternativa, se pueden cargar las variables desde un archivo. Crear un arch
 PORT=3000
 NODE_ENV=production
 MONGO_KEY=mongodb+srv://usuario:password@cluster.mongodb.net/shipnow
-JWT_SECRET=un-secreto-largo-y-privado
 ```
 
 Luego ejecutar:
@@ -329,10 +336,9 @@ PORT=3000
 MONGO_KEY=mongodb+srv://<usuario>:<password>@<cluster>/shipnow
 MONGO_KEY_TEST=mongodb+srv://<usuario>:<password>@<cluster>/shipnow_test
 NODE_ENV=development
-JWT_SECRET=<secreto>
 ```
 
-Aunque `NODE_ENV` figure como `development` en `.env`, `pnpm test` lo reemplaza temporalmente por `test`. `PORT`, `MONGO_KEY` y `JWT_SECRET` siguen siendo necesarios porque la validación de entorno exige todas las variables declaradas; la conexión efectiva de la suite usa únicamente `MONGO_KEY_TEST`.
+Aunque `NODE_ENV` figure como `development` en `.env`, `pnpm test` lo reemplaza temporalmente por `test`. La conexión efectiva de la suite usa únicamente `MONGO_KEY_TEST`.
 
 Las pruebas son de integración con MongoDB, no usan una base de datos en memoria. El helper `src/utils/test.utils.js` abre la conexión y el servidor antes de cada bloque de pruebas, y los cierra al finalizar. Las pruebas que persisten entidades eliminan los registros de prueba que generan como parte de su limpieza; de todos modos, la URI de pruebas debe ser una base de datos desechable y nunca la de producción.
 
@@ -361,5 +367,3 @@ Los controllers delegan los errores en un middleware centralizado. `CustomError`
 Winston registra en consola y guarda errores en `logs/error.log`; además crea archivos diarios `logs/error-YYYY-MM-DD.log` y conserva los últimos 14 días. El nivel mínimo es `debug` en desarrollo e `info` en producción. `GET /logger-test` emite un mensaje en cada nivel configurado.
 
 ## Estado actual y consideraciones de seguridad
-
-La autenticación con JWT y la autorización por rol aún no están implementadas, aunque `JWT_SECRET` ya es una variable requerida. En particular, `GET /api/users/email` actualmente devuelve la contraseña almacenada y no está protegido. No se debe exponer esta API en producción hasta implementar autenticación, autorización y hasheo de contraseñas.

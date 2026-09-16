@@ -6,7 +6,6 @@ export const env = {
     MONGO_KEY: process.env.MONGO_KEY,
     PORT: process.env.PORT ?? 3000,
     NODE_ENV: process.env.NODE_ENV ?? "development",
-    JWT_SECRET: process.env.JWT_SECRET,
     MONGO_KEY_TEST: process.env.MONGO_KEY_TEST
 }
 

@@ -25,9 +25,6 @@ class UserController {
     }
 
     static async getUserByEmail(req, res, next){
-
-        //TODO: Este endpoint expone el password sin protección.
-        //! Restringir con middleware de autorización (solo ADMIN) cuando se implemente JWT/auth.
         try{
             const { email } = req.query;
             const user = await UserService.getByEmail(email);
