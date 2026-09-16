@@ -4,6 +4,7 @@ import express from "express";
 import logger from "./config/logger.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpecs from "./config/swagger.js";
+import mongoose from "mongoose";
 import { env } from "./config/env.js";
 import { errorHandler, notFoundHandler } from "./middlewares/handle-error.middleware.js";
 

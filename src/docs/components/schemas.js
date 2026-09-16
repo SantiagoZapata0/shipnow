@@ -4,9 +4,12 @@ export const GoodRqSchemas = {
 
     HealthStatus: {
         type: "object",
+        required: ["status", "message", "database", "process"],
         properties: {
             status: { type: "string", example: "OK" },
-            payload: { type: "string", example: "Server ON" }
+            message: { type: "string", example: "Servidor activo" },
+            database: { type: "string", example: "connected" },
+            process: { type: "integer", example: 1234 }
         }
     },
 
@@ -977,10 +980,11 @@ export const BadRqSchemas = {
 
     ServiceUnavailableStatus: {
         type: "object",
+        required: ["status", "message", "database"],
         properties: {
             status: { type: "string", example: "Error"},
-            error: { type: "string", example: "SERVICE_UNAVAILABLE"},
-            message: { type: "string", example: "Service unavailable"}
+            message: { type: "string", example: "Servicio no disponible"},
+            database: { type: "string", example: "disconnected"}
         }
     }
 }

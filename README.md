@@ -1,5 +1,7 @@
 # ShipNow API
 
+[![CI](https://github.com/SantiagoZapata0/shipnow/actions/workflows/ci.yml/badge.svg)](https://github.com/SantiagoZapata0/shipnow/actions/workflows/ci.yml)
+
 API REST para administrar la operación de una logística de distribución: usuarios, productos, pedidos y entregas. También incluye generación de datos de prueba y documentación interactiva con Swagger.
 
 ## Funcionalidades
@@ -324,7 +326,7 @@ pnpm test
 El script configurado es:
 
 ```json
-"test": "cross-env NODE_ENV=test mocha \"test/**/*.test.js\""
+"test": "cross-env NODE_ENV=test PORT=3001 mocha \"test/**/*.test.js\""
 ```
 
 `cross-env` establece `NODE_ENV=test` solo para el proceso de esa ejecución, de forma compatible con distintos sistemas operativos; no modifica el archivo `.env` ni el entorno de la terminal. Al iniciarse las pruebas, `getDbUri()` selecciona `MONGO_KEY_TEST` en lugar de `MONGO_KEY`. Si esa variable no está definida, la aplicación detiene el inicio con un error para evitar ejecutar pruebas contra la base de datos habitual.
@@ -352,6 +354,28 @@ La cobertura actual se organiza de esta manera:
 
 En particular, las pruebas de rutas de mocks verifican los tres comportamientos principales para cada recurso: generación sin persistir (`200`), generación con persistencia (`201`) y rechazo de una cantidad inválida (`400` con `INVALID_MOCK_COUNT`). Para pedidos y entregas, la base de prueba debe disponer de las entidades relacionadas que exigen sus generadores; de lo contrario, la API responde `MOCK_DATA_NOT_FOUND`.
 
+## Integración continua con GitHub Actions
+
+El repositorio incluye el workflow `.github/workflows/ci.yml`, que se ejecuta automáticamente con cada `push` a `main` y con cada pull request dirigido a `main`.
+
+La ejecución contiene dos verificaciones:
+
+| Job | Verificación |
+|---|---|
+| `Pruebas automatizadas` | Prepara Node.js 22 y pnpm, instala las dependencias mediante `pnpm install --frozen-lockfile`, inicia una instancia temporal de `mongo:8` y ejecuta las 122 pruebas con `pnpm test`. |
+| `Construccion de Docker` | Se ejecuta solamente si las pruebas finalizan correctamente, valida `docker-compose.yml` con `docker compose config` y construye la imagen mediante el `Dockerfile`. |
+
+La base `shipnow_test` utilizada por el workflow existe solamente dentro del servicio temporal de MongoDB de esa ejecución. No utiliza credenciales de Atlas ni la base configurada localmente, y el contenedor se elimina cuando termina el job. Las fixtures de prueba crean las relaciones necesarias entre usuarios, productos, pedidos y entregas, y eliminan los datos generados al finalizar.
+
+Para verificar el resultado en GitHub:
+
+1. Subir los cambios a la rama `main` mediante `git push`.
+2. Abrir la pestaña [Actions del repositorio](https://github.com/SantiagoZapata0/shipnow/actions).
+3. Seleccionar el workflow **CI** y abrir la ejecución correspondiente al commit.
+4. Comprobar que los jobs **Pruebas automatizadas** y **Construccion de Docker** aparezcan en verde.
+
+El indicador ubicado al comienzo de este README también muestra el estado de la última ejecución. Desde cada job se pueden consultar los comandos ejecutados, la salida completa de las 122 pruebas y el resultado de la validación y construcción de Docker.
+
 ## Errores y logging
 
 Los controllers delegan los errores en un middleware centralizado. `CustomError` y `ERROR_CODES` definen códigos como `NOT_FOUND`, `INVALID_ID`, `BAD_REQUEST`, `VALIDATION_ERROR`, `DUPLICATE_KEY`, `INVALID_MOCK_COUNT` y `MOCK_DATA_NOT_FOUND`. Los errores de Mongoose y de conexión también se convierten a una respuesta segura y uniforme:
@@ -367,3 +391,18 @@ Los controllers delegan los errores en un middleware centralizado. `CustomError`
 Winston registra en consola y guarda errores en `logs/error.log`; además crea archivos diarios `logs/error-YYYY-MM-DD.log` y conserva los últimos 14 días. El nivel mínimo es `debug` en desarrollo e `info` en producción. `GET /logger-test` emite un mensaje en cada nivel configurado.
 
 ## Estado actual y consideraciones de seguridad
+
+ShipNow es un proyecto académico cuyo foco principal está en la arquitectura por capas, la lógica de negocio, los mocks, las pruebas automatizadas, la documentación OpenAPI y la ejecución mediante Docker. La autenticación, la autorización y el uso de JWT no forman parte del alcance principal de esta versión, por lo que se dejaron pendientes para una etapa posterior.
+
+La API no debe exponerse públicamente en su estado actual. Las limitaciones conocidas más importantes son:
+
+- Las contraseñas se almacenan sin hash. Aunque el modelo las excluye de las consultas habituales, el endpoint `GET /api/users/email?email=<email>` las recupera y devuelve explícitamente.
+- No existe autenticación ni autorización por roles. El endpoint de búsqueda por email debería estar protegido, por ejemplo, para que solamente un administrador autorizado pueda consultarlo; idealmente, ninguna respuesta debería incluir la contraseña, ni siquiera hasheada.
+- Los endpoints CRUD no requieren identidad ni permisos, por lo que cualquier cliente con acceso a la API puede intentar crear, modificar, consultar o eliminar recursos.
+- `GET /logger-test` es un endpoint de diagnóstico y actualmente permanece accesible en producción. Antes de un despliegue real debería eliminarse, deshabilitarse o restringirse a usuarios autorizados.
+- Los documentos subidos se almacenan en el sistema de archivos local del servidor. Esta estrategia no ofrece persistencia compartida entre varias instancias y, para producción, debería complementarse con validación del contenido real, nombres seguros, análisis de archivos y almacenamiento externo.
+- No se implementaron medidas adicionales como limitación de solicitudes, encabezados HTTP de seguridad o protección específica contra intentos repetidos de acceso.
+
+El proyecto sí evita versionar el archivo `.env`, limita el tamaño y los tipos MIME admitidos en las cargas, utiliza respuestas de error controladas y deshabilita las rutas de mocks cuando `NODE_ENV=production`. Estas medidas reducen algunos riesgos, pero no sustituyen un sistema completo de seguridad.
+
+Antes de considerar la API apta para producción se debería, como mínimo, hashear las contraseñas con `bcrypt` o `Argon2`, implementar autenticación y autorización por roles, eliminar los datos sensibles de todas las respuestas, proteger los endpoints de diagnóstico y agregar controles de seguridad y monitoreo apropiados para el entorno de despliegue.
