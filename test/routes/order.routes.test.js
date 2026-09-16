@@ -6,6 +6,7 @@ import OrderService from "../../src/services/order.service.js";
 import supertest from "supertest";
 import fs from "fs";
 import path from "path";
+import { cleanupDependencies, createOrderDependencies } from "../helpers/test-fixtures.js";
 
 const request = supertest(app)
 
@@ -13,6 +14,7 @@ describe("/api/orders", function(){
     before(async function(){
         this.timeout(10000)
         await connectDbSv()
+        this.dependencies = await createOrderDependencies()
     })
 
     describe("GET", function(){
@@ -172,6 +174,7 @@ describe("/api/orders", function(){
     })
 
     after(async function(){
+        await cleanupDependencies(this.dependencies)
         await disconnectDbSv()
     })
 })

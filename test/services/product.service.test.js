@@ -69,7 +69,7 @@ describe("Test unitario sobre Product Service", function(){
         })
 
         it("[create]: Por codigo de producto duplicado", async function(){
-            const codeDuplicated = {...this.mockProduct[0], code: "CAJA-003"}
+            const codeDuplicated = {...this.mockProduct[0], code: this.testProduct.code}
 
             try{
                 await ProductService.createOneProduct(codeDuplicated)

@@ -6,6 +6,7 @@ import DeliveryService from "../../src/services/delivery.service.js";
 import OrderService from "../../src/services/order.service.js";
 import UserService from "../../src/services/user.service.js";
 import ProductService from "../../src/services/product.service.js";
+import { cleanupDependencies, createDeliveryDependencies, createOrderDependencies } from "../helpers/test-fixtures.js";
 
 const request = supertest(app)
 
@@ -13,6 +14,7 @@ describe("/api/mocks/deliveries", function(){
     before(async function(){
         this.timeout(10000)
         await connectDbSv()
+        this.dependencies = await createDeliveryDependencies()
     })
 
     it("Respuesta esperada en caso de Mock generado: [200]", async function(){
@@ -39,6 +41,7 @@ describe("/api/mocks/deliveries", function(){
         if(this.mockTest){
             await DeliveryService.deleteOneDelivery(this.mockTest._id)
         }
+        await cleanupDependencies(this.dependencies)
         await disconnectDbSv()
     })
 })
@@ -47,6 +50,7 @@ describe("/api/mocks/orders", function(){
     before(async function(){
         this.timeout(10000)
         await connectDbSv()
+        this.dependencies = await createOrderDependencies()
     })
 
     it("Respuesta esperada en caso de Mock generado: [200]", async function(){
@@ -73,6 +77,7 @@ describe("/api/mocks/orders", function(){
         if(this.mockTest){
             await OrderService.deleteOneOrder(this.mockTest._id)
         }
+        await cleanupDependencies(this.dependencies)
         await disconnectDbSv()
     })
 })

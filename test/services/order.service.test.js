@@ -6,6 +6,7 @@ import UserService from "../../src/services/user.service.js";
 import ProductService from "../../src/services/product.service.js";
 import ProductMocksService from "../../src/mocks/services/product.mocks.service.js";
 import { DOCUMENT_TYPES } from "../../src/constants/constants.js";
+import { cleanupDependencies, createOrderDependencies } from "../helpers/test-fixtures.js";
 
 const buildFile = (name) => ({
     originalname: name,
@@ -18,6 +19,7 @@ describe("Test unitario sobre Order Service", function(){
     before(async function (){
         this.timeout(10000)
         await connectDbSv()
+        this.dependencies = await createOrderDependencies()
         this.mockOrder = await OrderMockService.generateMockOrders(2);
     })
 
@@ -219,6 +221,7 @@ describe("Test unitario sobre Order Service", function(){
     })
 
     after(async function(){
+        await cleanupDependencies(this.dependencies)
         await disconnectDbSv()
     })
 })

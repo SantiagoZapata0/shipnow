@@ -34,7 +34,7 @@ describe("Test unitario de User Service", function(){
 
     describe("Casos exitosos", function(){
         it("Se debe crear un usuario", async function(){
-            const createdUser = await UserService.createOneUser(this.mockUser[0]);
+            const createdUser = await UserService.createOneUser({...this.mockUser[0], role: USER_ROLES.USER});
             this.user = createdUser;
             expect(createdUser).to.be.an("object").and.to.have.property("_id");
         })

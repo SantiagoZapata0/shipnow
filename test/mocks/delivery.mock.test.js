@@ -1,11 +1,13 @@
 import { expect } from "chai";
 import { connectDbSv, disconnectDbSv } from "../../src/utils/test.utils.js";
 import DeliveryMockService from "../../src/mocks/services/delivery.mocks.service.js";
+import { cleanupDependencies, createDeliveryDependencies } from "../helpers/test-fixtures.js";
 
 describe("Test unitario sobre Mocks de entregas", function(){
     before(async function(){
         this.timeout(10000)
         await connectDbSv()
+        this.dependencies = await createDeliveryDependencies()
     })
 
     it("Se debe generar un mock de entrega", async function(){
@@ -24,6 +26,7 @@ describe("Test unitario sobre Mocks de entregas", function(){
     })
 
     after(async function(){
+        await cleanupDependencies(this.dependencies)
         await disconnectDbSv()
     })
 })

@@ -4,11 +4,13 @@ import DeliveryService from "../../src/services/delivery.service.js";
 import DeliveryMockService from "../../src/mocks/services/delivery.mocks.service.js";
 import UserMockService from "../../src/mocks/services/user.mocks.service.js";
 import UserService from "../../src/services/user.service.js";
+import { cleanupDependencies, createDeliveryDependencies } from "../helpers/test-fixtures.js";
 
 describe("Test unitario sobre Delivery Service", function(){
     before(async function(){
         this.timeout(10000)
         await connectDbSv()
+        this.dependencies = await createDeliveryDependencies()
 
         this.mockDelivery = await DeliveryMockService.generateMockDeliveries(2)
     })
@@ -145,6 +147,7 @@ describe("Test unitario sobre Delivery Service", function(){
     })
 
     after(async function(){
+        await cleanupDependencies(this.dependencies)
         await disconnectDbSv()
     })
 })

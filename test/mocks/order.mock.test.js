@@ -1,11 +1,13 @@
 import { expect } from "chai";
 import { connectDbSv, disconnectDbSv } from "../../src/utils/test.utils.js";
 import OrderMockService from "../../src/mocks/services/order.mocks.service.js";
+import { cleanupDependencies, createOrderDependencies } from "../helpers/test-fixtures.js";
 
 describe("Test unitario sobre Mocks de ordenes", function(){
     before(async function(){
         this.timeout(10000)
         await connectDbSv()
+        this.dependencies = await createOrderDependencies()
     })
 
     it("Se debe generar un mock de orden", async function(){
@@ -24,6 +26,7 @@ describe("Test unitario sobre Mocks de ordenes", function(){
     })
 
     after(async function(){
+        await cleanupDependencies(this.dependencies)
         await disconnectDbSv()
     })
 })

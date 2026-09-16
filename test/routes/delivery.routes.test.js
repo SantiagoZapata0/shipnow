@@ -4,6 +4,7 @@ import supertest from "supertest";
 import app from "../../src/app.js";
 import DeliveryMockService from "../../src/mocks/services/delivery.mocks.service.js";
 import DeliveryService from "../../src/services/delivery.service.js";
+import { cleanupDependencies, createDeliveryDependencies } from "../helpers/test-fixtures.js";
 
 const request = supertest(app)
 
@@ -11,6 +12,7 @@ describe("/api/deliveries", function(){
     before(async function(){
         this.timeout(10000)
         await connectDbSv()
+        this.dependencies = await createDeliveryDependencies()
     })
 
     describe("GET", function(){
@@ -122,6 +124,7 @@ describe("/api/deliveries", function(){
     })
 
     after(async function(){
+        await cleanupDependencies(this.dependencies)
         await disconnectDbSv()
     })
 })
